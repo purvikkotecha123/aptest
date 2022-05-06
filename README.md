@@ -1,4 +1,4 @@
-# Applepay
+# Applepay Sandbox
 
 See a [hosted version](https://sandbox-applepay-paypal-js-sdk.herokuapp.com) of the sample
 
