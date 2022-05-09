@@ -29,6 +29,7 @@ paypal
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(JSON.stringify(data, null, 4))
           alert("order captured")
         })
         .catch(console.error);
