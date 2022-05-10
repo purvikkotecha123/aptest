@@ -11,7 +11,7 @@ const order = {
   ],
 };
 
-
+/* ApplePay */
 paypal
   .Buttons({
     fundingSource: paypal.FUNDING.APPLEPAY,
@@ -156,11 +156,14 @@ document.querySelectorAll("input[name=payment-option]").forEach((el) => {
         document.getElementById("ideal-fields").style.display = "none";
         document.getElementById("ideal-btn").style.display = "none";
         document.getElementById("paypal-btn").style.display = "block";
+        document.getElementById("applepay-btn").style.display = "none";
+
         break;
       case "ideal":
         document.getElementById("ideal-fields").style.display = "block";
         document.getElementById("ideal-btn").style.display = "block";
         document.getElementById("paypal-btn").style.display = "none";
+        document.getElementById("applepay-btn").style.display = "none";
         break;
       case "applepay":
           document.getElementById("ideal-fields").style.display = "none";
