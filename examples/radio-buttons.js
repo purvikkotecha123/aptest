@@ -11,6 +11,7 @@ const order = {
   ],
 };
 
+
 paypal
   .Buttons({
     fundingSource: paypal.FUNDING.APPLEPAY,
@@ -36,6 +37,13 @@ paypal
     },
   })
   .render("#applepay-btn");
+
+/* Paypal */
+paypal
+  .Marks({
+    fundingSource: paypal.FUNDING.PAYPAL,
+  })
+  .render("#paypal-mark");
 
 paypal
   .Buttons({
