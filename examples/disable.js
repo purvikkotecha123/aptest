@@ -1,0 +1,39 @@
+
+   
+/* eslint-disable  no-alert, no-unused-vars */
+
+const order = {
+  purchase_units: [
+    {
+      amount: {
+        currency_code: "USD",
+        value: "7.05",
+      },
+    },
+  ],
+};
+
+paypal
+  .Buttons({
+    style: {
+      label: "pay",
+      color: "black",
+    },
+    createOrder(data, actions) {
+      return actions.order.create(order);
+    },
+    onApprove(data, actions) {
+      console.log("Order approved")
+
+      fetch(`/capture/${data.orderID}`, {
+        method: "post",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(JSON.stringify(data, null, 4))
+          alert("order captured")
+        })
+        .catch(console.error);
+    },
+  })
+  .render("#applepay-btn");
