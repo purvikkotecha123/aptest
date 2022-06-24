@@ -1,3 +1,32 @@
+/* eslint-disable  no-alert, no-unused-vars */
+
+const order = {
+  purchase_units: [
+    {
+      amount: {
+        currency_code: "USD",
+        value: "0.01",
+      },
+      shipping: {
+        name: {
+          full_name: "John Doe",
+        },
+        address: {
+          address_line_1: "123 FROM ORDER CREATE",
+          address_line_2: "Floor 6",
+          admin_area_1: "CA",
+          admin_area_2: "San Francisco",
+          postal_code: "94107",
+          country_code: "US",
+        },
+      },
+    },
+  ],
+  application_context: {
+    shipping_preference: "SET_PROVIDED_ADDRESS",
+  },
+};
+
 paypal
   .Buttons({
     fundingSource: paypal.FUNDING.APPLEPAY,
@@ -11,23 +40,25 @@ paypal
     async onApprove(data, actions) {
       console.log("Order approved");
 
-      logResponse("GET before capture:", 
-        await fetch(`/orders/${data.orderID}`).then(res => res.json())
-      )
+      logResponse(
+        "GET before capture:",
+        await fetch(`/orders/${data.orderID}`).then((res) => res.json())
+      );
 
       const captureResponse = await fetch(`/capture/${data.orderID}`, {
         method: "post",
-      }).then(res => res.json())
-      
-      logResponse("Capture:", captureResponse)
+      }).then((res) => res.json());
 
-      logResponse("GET after capture:", 
-        await fetch(`/orders/${data.orderID}`).then(res => res.json())
-      )
+      logResponse("Capture:", captureResponse);
+
+      logResponse(
+        "GET after capture:",
+        await fetch(`/orders/${data.orderID}`).then((res) => res.json())
+      );
     },
-    onError(err){
-      logResponse("onError:", err)
-    }
+    onError(err) {
+      logResponse("onError:", err);
+    },
   })
   .render("#applepay-btn");
 
