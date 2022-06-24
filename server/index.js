@@ -81,6 +81,32 @@ app.post("/capture/:orderId", async (req, res) => {
   res.json({ debugID, ...data });
 });
 
+app.get("/orders/:orderId", async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const { access_token } = await getAccessToken();
+    const { data } = await axios({
+      url: `${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${access_token}`,
+      }
+    });
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.json({
+      msg: err.message,
+      details: err.toString(),
+      body: req.body,
+      orderId,
+    });
+  }
+});
+
 app.listen(PORT, async () => {
   console.log(`Example app listening at http://localhost:${PORT}`);
 });
