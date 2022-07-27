@@ -43,8 +43,8 @@ paypal
         method: "post",
       })
         .then((res) => res.json())
-        .then((data) => {
-          console.log(JSON.stringify(data, null, 4))
+        .then((dataCapt) => {
+          console.log(JSON.stringify(dataCapt, null, 4))
 
           fetch(`/orders/${data.orderID}`)
           .then(res => res.json())

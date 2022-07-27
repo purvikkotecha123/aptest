@@ -94,7 +94,9 @@ paypal
         method: "post",
       })
         .then((res) => res.json())
-        .then(() => {
+        .then((dataCapt) => {
+          logResponse("Capture -", dataCapt);
+
           fetch(`/orders/${data.orderID}`)
           .then(res => res.json())
           .then(data => {
