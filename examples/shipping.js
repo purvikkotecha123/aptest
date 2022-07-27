@@ -42,17 +42,7 @@ const order = {
               value: "1.00",
               currency_code: "USD",
             },
-          },
-          {
-            id: "SHIP_789",
-            label: "In Store",
-            type: "PICKUP",
-            selected: false,
-            amount: {
-              value: "0.00",
-              currency_code: "USD",
-            },
-          },
+          }
         ],
       },
     },
