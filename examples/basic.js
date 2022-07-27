@@ -44,7 +44,7 @@ paypal
       })
         .then((res) => res.json())
         .then((dataCapt) => {
-          console.log(JSON.stringify(dataCapt, null, 4))
+          logResponse("Capture:", dataCapt);
 
           fetch(`/orders/${data.orderID}`)
           .then(res => res.json())
