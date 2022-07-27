@@ -80,7 +80,7 @@ paypal
       return actions.order.create(order);
     },
     onError(err) {
-      logResponse("onError", err);
+      logResponse("onError", err.message);
     },
     onApprove(data, actions) {
       fetch(`/capture/${data.orderID}`, {

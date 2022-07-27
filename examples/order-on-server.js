@@ -21,8 +21,8 @@ paypal
       logResponse("onCancel called", {});
     },
     onError(err) {
-        logResponse("onError", err);
-      },
+        logResponse("onError", err.message);
+    },
     async createOrder(data, actions) {
         const order = await fetch("/orders", {
             method: "POST"
