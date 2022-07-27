@@ -133,6 +133,47 @@ app.get("/orders/:orderId", async (req, res) => {
   }
 });
 
+app.post("/orders", async (req, res) => {
+  const order = {
+    intent: "CAPTURE",
+    purchase_units: [
+      {
+        amount: {
+          currency_code: "USD",
+          value: "9.99",
+        },
+        payee: {
+          merchant_id: "2V9L63AM2BYKC"
+        }
+      },
+    ],
+  };
+
+  try {
+    const { access_token } = await getAccessToken();
+
+    const { data } = await axios({
+      url: `${PAYPAL_API_BASE}/v2/checkout/orders`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+      data: order
+    });
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.json({
+      msg: err.message,
+      details: err.toString(),
+      body: req.body,
+    });
+  }
+});
+
+
 app.listen(PORT, async () => {
   console.log(`Example app listening at http://localhost:${PORT}`);
 });
