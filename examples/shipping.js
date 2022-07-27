@@ -75,6 +75,16 @@ paypal
       label: "pay",
       color: "black",
     },
+    paymentRequest: {
+      applepay: {
+        requiredShippingContactFields: [
+          "postalAddress",
+          "name",
+          "phone",
+          "email",
+        ],
+      },
+    },
     createOrder(data, actions) {
       logResponse("Order Payload:", order);
       return actions.order.create(order);

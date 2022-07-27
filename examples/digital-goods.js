@@ -18,6 +18,13 @@ paypal
       label: "pay",
       color: "black",
     },
+    paymentRequest: {
+      applepay: {
+        requiredShippingContactFields: [
+          "email",
+        ],
+      },
+    },
     onCancel() {
       logResponse("onCancel called", {});
     },

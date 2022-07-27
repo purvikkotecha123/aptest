@@ -7,7 +7,7 @@ paypal
       label: "pay",
       color: "black",
     },
-    /*paymentRequest: {
+    paymentRequest: {
       applepay: {
         requiredShippingContactFields: [
           "postalAddress",
@@ -16,7 +16,7 @@ paypal
           "email",
         ],
       },
-    },*/
+    },
     onCancel() {
       logResponse("onCancel called", {});
     },

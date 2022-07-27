@@ -75,6 +75,28 @@ paypal
       label: "pay",
       color: "black",
     },
+    paymentRequest: {
+        applepay: {
+            requiredShippingContactFields: [
+                "postalAddress", 
+                "name", 
+                "phone", 
+                "email"
+            ],
+            shippingContact: {
+                locality: "Cupertino",
+                country: "United States",
+                postalCode: "95014-2083",
+                administrativeArea: "CA",
+                emailAddress: "ravipatel@example.com",
+                familyName: "Patel",
+                addressLines: ["1 Infinite Loop"],
+                givenName: "Ravi",
+                countryCode: "US",
+                phoneNumber: "(408) 555-5555",
+            },
+        },
+    },
     createOrder(data, actions) {
       logResponse("Order Payload:", order);
       return actions.order.create(order);
@@ -88,12 +110,12 @@ paypal
       })
         .then((res) => res.json())
         .then((dataCapt) => {
-          logResponse("Capture -", dataCapt);
+          logResponse("Capture", dataCapt);
 
           fetch(`/orders/${data.orderID}`)
           .then(res => res.json())
           .then(data => {
-            logResponse("GET Order", data);
+            logResponse("Get Order", data);
           })
 
         })
