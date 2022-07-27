@@ -79,6 +79,9 @@ paypal
       logResponse("Order Payload:", order);
       return actions.order.create(order);
     },
+    onError(err) {
+        logResponse("onError", err);
+    },
     onApprove(data, actions) {
       fetch(`/capture/${data.orderID}`, {
         method: "post",
