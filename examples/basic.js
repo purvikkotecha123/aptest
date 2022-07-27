@@ -51,7 +51,7 @@ paypal
           .then(data => {
             logResponse("GET Order - w/ capture/refund", data);
           })
-          
+
         })
         .catch(console.error);
     },
@@ -84,7 +84,7 @@ paypal
     document
       .getElementById("logging")
       .insertAdjacentElement("afterend", formattedTitle);
-  
+  /*
       // eslint-disable-next-line
       hljs.configure({
         ignoreUnescapedHTML: true
@@ -92,4 +92,5 @@ paypal
   
       // eslint-disable-next-line
       hljs.highlightAll();
+      */
   }

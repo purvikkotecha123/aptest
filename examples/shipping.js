@@ -229,7 +229,7 @@ paypal
     document
       .getElementById("logging")
       .insertAdjacentElement("afterend", formattedTitle);
-  
+  /*
       // eslint-disable-next-line
       hljs.configure({
         ignoreUnescapedHTML: true
@@ -237,4 +237,5 @@ paypal
   
       // eslint-disable-next-line
       hljs.highlightAll();
+      */
   }
