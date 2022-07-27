@@ -100,7 +100,7 @@ paypal
           fetch(`/orders/${data.orderID}`)
           .then(res => res.json())
           .then(data => {
-            logResponse("GET Order - w/ capture/refund", data);
+            logResponse("GET Order", data);
           })
 
         })
