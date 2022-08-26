@@ -1,3 +1,6 @@
+/* eslint-disable  no-alert, no-unused-vars, no-undef */
+
+
 async function config() {
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
@@ -35,6 +38,49 @@ async function config() {
     }
   )
     .then((res) => res.json())
+    .then(res => res.data.applePayMerchantSession)
+    .catch(console.error);
+}
+
+async function validateMerchant({ validationUrl }) {
+  return await fetch(
+    "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
+    {
+      method: "POST",
+      // credentials: "include",
+      // mode: "no-cors", // no-cors, *cors, same-origin
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        query: `
+            query GetApplePayMerchantSession(
+                $url : String!
+                $orderID : String!
+                $clientID : String!
+                $merchantDomain : String!
+            ) {
+                applePayMerchantSession(
+                    url: $url
+                    orderID: $orderID
+                    clientID: $clientID
+                    merchantDomain: $merchantDomain
+                ) {
+                    session
+                }
+            }`,
+        variables: {
+          url: validationUrl,
+          clientID:
+            "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4",
+          orderID: "8Y970684TC002102E",
+          merchantDomain: "sandbox-applepay-paypal-js-sdk.herokuapp.com",
+        },
+      }),
+    }
+  )
+    .then((res) => res.json())
     .catch(console.error);
 }
 
@@ -50,7 +96,7 @@ async function setupApplepay() {
     } = await  config() //applepay.getConfiguration();
   */
   //if (!isApplePayEligible) {
-   // throw new Error("applepay is not eligible");
+  // throw new Error("applepay is not eligible");
   // }
 
   document.getElementById("applepay-container").innerHTML =
@@ -82,13 +128,14 @@ async function setupApplepay() {
     var session = new ApplePaySession(4, applePayPaymentRequest);
 
     session.onvalidatemerchant = (event) => {
-        alert(event.validationURL)
+      alert(event.validationURL);
       console.log({ validationUrl: event.validationURL });
       applepay
         .validateMerchant({
           validationUrl: event.validationURL,
         })
         .then((merchantSession) => {
+            console.log(merchantSession)
           const session = atob(merchantSession.session);
           session.completeMerchantValidation(merchantSession);
         })
