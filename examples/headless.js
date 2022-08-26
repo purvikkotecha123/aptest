@@ -128,8 +128,7 @@ async function setupApplepay() {
     var session = new ApplePaySession(4, applePayPaymentRequest);
 
     session.onvalidatemerchant = (event) => {
-      alert(event.validationURL);
-      console.log({ validationUrl: event.validationURL });
+
       applepay
         .validateMerchant({
           validationUrl: event.validationURL,
