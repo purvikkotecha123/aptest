@@ -38,7 +38,6 @@ async function config() {
     }
   )
     .then((res) => res.json())
-    .then(res => res.data.applePayMerchantSession)
     .catch(console.error);
 }
 
@@ -81,6 +80,7 @@ async function validateMerchant({ validationUrl }) {
     }
   )
     .then((res) => res.json())
+    .then(res => res.data.applePayMerchantSession)
     .catch(console.error);
 }
 
