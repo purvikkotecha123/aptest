@@ -133,7 +133,7 @@ async function setupApplepay() {
         .then((merchantSession) => {
             console.log(merchantSession)
           const session = atob(merchantSession.session);
-          session.completeMerchantValidation(merchantSession);
+          session.completeMerchantValidation(session);
         })
         .catch((err) => {
             console.error(err)
