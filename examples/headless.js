@@ -99,6 +99,8 @@ async function setupApplepay() {
   // throw new Error("applepay is not eligible");
   // }
 
+  console.log(JSON.stringify(await  config(), null, 4))
+
   document.getElementById("applepay-container").innerHTML =
     '<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">';
 
@@ -129,8 +131,7 @@ async function setupApplepay() {
 
     session.onvalidatemerchant = (event) => {
 
-      applepay
-        .validateMerchant({
+      validateMerchant({
           validationUrl: event.validationURL,
         })
         .then((merchantSession) => {
