@@ -131,9 +131,9 @@ async function setupApplepay() {
           validationUrl: event.validationURL,
         })
         .then((merchantSession) => {
-            console.log(merchantSession)
-          const session = atob(merchantSession.session);
-          session.completeMerchantValidation(session);
+          console.log(merchantSession)
+          const payload = atob(merchantSession.session)
+          session.completeMerchantValidation(payload);
         })
         .catch((err) => {
             console.error(err)
