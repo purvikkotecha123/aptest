@@ -115,10 +115,6 @@ async function setupApplepay() {
       merchantCapabilities: ["supports3DS"],
       supportedNetworks: ["masterCard", "discover", "visa", "amex"],
       requiredShippingContactFields: [
-        "name",
-        "phone",
-        "email",
-        "postalAddress",
       ],
       total: {
         label: "Demo",
@@ -139,11 +135,12 @@ async function setupApplepay() {
           const session = atob(merchantSession.session);
           session.completeMerchantValidation(merchantSession);
         })
-        .catch(() => {
+        .catch((err) => {
+            console.error(err)
           session.abort();
         });
     };
-
+/*
     session.onshippingcontactselected = (event) => {
       const shippingContactUpdate = {};
       session.completeShippingContactSelection(shippingContactUpdate);
@@ -155,7 +152,7 @@ async function setupApplepay() {
       var shippingMethodUpdate = {}; // https://developer.apple.com/documentation/apple_pay_on_the_web/applepayshippingmethodupdate
       session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
     };
-
+*/
     session.begin();
   }
 }
