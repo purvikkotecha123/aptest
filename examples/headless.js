@@ -161,5 +161,6 @@ async function setupApplepay() {
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {
+    console.log("DOMContentLoaded")
   setupApplepay().catch(console.log);
 });
