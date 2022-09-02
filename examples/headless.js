@@ -37,9 +37,6 @@ async function createOrder(payload) {
   };
 }
 
-createOrder()
-.then(console.log)
-.catch(console.log)
 
 async function config() {
   return await fetch(
@@ -70,8 +67,7 @@ async function config() {
           }`,
         variables: {
           buyerCountry: "US",
-          clientId:
-            "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4",
+          clientId: CLIENT_ID,
           merchantId: ["2V9L63AM2BYKC"],
         },
       }),
