@@ -140,8 +140,16 @@ async function setupApplepay() {
           session.abort();
         });
     };
-/*
+
+    session.onpaymentmethodselected = (event) => {
+      console.log(JSON.stringify({
+        method: "onpaymentmethodselected",
+        ...event
+      }, null, 4))
+    }
+
     session.onshippingcontactselected = (event) => {
+      console.log("-- onshippingcontactselected --")
       const shippingContactUpdate = {};
       session.completeShippingContactSelection(shippingContactUpdate);
     };
@@ -152,7 +160,7 @@ async function setupApplepay() {
       var shippingMethodUpdate = {}; // https://developer.apple.com/documentation/apple_pay_on_the_web/applepayshippingmethodupdate
       session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
     };
-*/
+
     session.begin();
   }
 }
