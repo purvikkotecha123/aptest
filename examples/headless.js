@@ -166,6 +166,7 @@ async function setupApplepay() {
 
     session.onpaymentauthorized = (event) => {
       alert("onpaymentauthorized")
+      session.completePaymentMethodSelection({})
     } 
 
     session.begin();
