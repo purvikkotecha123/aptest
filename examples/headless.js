@@ -138,21 +138,10 @@ async function setupApplepay() {
         });
     };
 
-    session.onpaymentmethodselected = (event) => {
-      console.log(
-        JSON.stringify(
-          {
-            method: "onpaymentmethodselected",
-            ...event,
-          },
-          null,
-          4
-        )
-      );
+    session.onpaymentmethodselected = () => {
       session.completePaymentMethodSelection({
         newTotal: {
-          label: "XXXX",
-          amount: "1.00",
+          ...applePayPaymentRequest.total
         },
         newLineItems: [],
       });
