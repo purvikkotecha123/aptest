@@ -1,5 +1,46 @@
 /* eslint-disable  no-alert, no-unused-vars, no-undef */
 
+const CLIENT_ID =
+  "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4";
+
+async function createOrder(payload) {
+
+
+  const basicAuth = btoa(`${CLIENT_ID}:`);
+
+  const accessToken = await fetch("https://api.sandbox.paypal.com/v1/oauth2/token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuth}`,
+    },
+    body: "grant_type=client_credentials",
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      return res.access_token;
+    });
+
+    alert(accessToken)
+
+  const res = await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  const { id } = await res.json();
+
+  return {
+    id,
+  };
+}
+
+createOrder()
+.then(console.log)
+.catch(console.log)
+
 async function config() {
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
@@ -41,6 +82,18 @@ async function config() {
 }
 
 async function validateMerchant({ validationUrl }) {
+  const { id } = await createOrder({
+    intent: "CAPTURE",
+    purchase_units: [
+      {
+        amount: {
+          currency_code: "USD",
+          value: "1.00",
+        },
+      },
+    ],
+  })
+
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
     {
@@ -70,9 +123,8 @@ async function validateMerchant({ validationUrl }) {
             }`,
         variables: {
           url: validationUrl,
-          clientID:
-            "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4",
-          orderID: "3A499933V7998380D",
+          clientID: CLIENT_ID,
+          orderID: id,
           merchantDomain: "sandbox-applepay-paypal-js-sdk.herokuapp.com",
         },
       }),
