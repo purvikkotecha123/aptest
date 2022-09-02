@@ -20,7 +20,6 @@ async function createOrder(payload) {
       return res.access_token;
     });
 
-    alert(accessToken)
 
   const res = await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
     method: "POST",
