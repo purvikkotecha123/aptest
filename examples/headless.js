@@ -113,7 +113,22 @@ async function setupApplepay() {
       currencyCode: "USD",
       merchantCapabilities: ["supports3DS"],
       supportedNetworks: ["masterCard", "discover", "visa", "amex"],
-      requiredShippingContactFields: [],
+      requiredShippingContactFields: [
+        "postalAddress",
+        "name",
+        "phone",
+        "email",
+      ],
+      lineItems: [
+        {
+          label: "Sales Tax",
+          amount: "0.00",
+        },
+        {
+          label: "Shipping",
+          amount: "0.00",
+        },
+      ],
       total: {
         label: "Demo",
         type: "final",
@@ -141,25 +156,32 @@ async function setupApplepay() {
     session.onpaymentmethodselected = () => {
       session.completePaymentMethodSelection({
         newTotal: {
-          ...applePayPaymentRequest.total
+          ...applePayPaymentRequest.total,
         },
         newLineItems: [],
       });
     };
-/*
+
     session.onshippingcontactselected = (event) => {
-      console.log("-- onshippingcontactselected --");
-      const shippingContactUpdate = {};
+      const shippingContactUpdate = {
+        newTotal: {
+          ...applePayPaymentRequest.total,
+        },
+        newLineItems: [],
+      };
       session.completeShippingContactSelection(shippingContactUpdate);
     };
 
     session.onshippingmethodselected = (event) => {
-      console.log("Your shipping method is:", event.shippingMethod);
-      // Update payment details.
-      var shippingMethodUpdate = {}; // https://developer.apple.com/documentation/apple_pay_on_the_web/applepayshippingmethodupdate
+      const shippingMethodUpdate = {
+        newTotal: {
+          ...applePayPaymentRequest.total,
+        },
+        newLineItems: [],
+      };
       session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
     };
-*/
+
     session.onpaymentauthorized = (event) => {
       alert("onpaymentauthorized");
       session.completePaymentMethodSelection({});
