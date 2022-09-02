@@ -149,9 +149,15 @@ async function setupApplepay() {
           4
         )
       );
-      session.completePaymentMethodSelection({})
+      session.completePaymentMethodSelection({
+        newTotal: {
+          label: "XXXX",
+          amount: "1.00",
+        },
+        newLineItems: [],
+      });
     };
-
+/*
     session.onshippingcontactselected = (event) => {
       console.log("-- onshippingcontactselected --");
       const shippingContactUpdate = {};
@@ -164,11 +170,11 @@ async function setupApplepay() {
       var shippingMethodUpdate = {}; // https://developer.apple.com/documentation/apple_pay_on_the_web/applepayshippingmethodupdate
       session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
     };
-
+*/
     session.onpaymentauthorized = (event) => {
-      alert("onpaymentauthorized")
-      session.completePaymentMethodSelection({})
-    } 
+      alert("onpaymentauthorized");
+      session.completePaymentMethodSelection({});
+    };
 
     session.begin();
   }
