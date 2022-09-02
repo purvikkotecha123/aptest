@@ -149,6 +149,7 @@ async function setupApplepay() {
           4
         )
       );
+      session.completePaymentMethodSelection({})
     };
 
     session.onshippingcontactselected = (event) => {
