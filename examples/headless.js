@@ -85,6 +85,9 @@ async function validateMerchant({ validationUrl }) {
           currency_code: "USD",
           value: "1.00",
         },
+        payee: {
+          merchant_id: "2V9L63AM2BYKC"
+        }
       },
     ],
   })
