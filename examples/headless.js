@@ -1,6 +1,5 @@
 /* eslint-disable  no-alert, no-unused-vars, no-undef */
 
-
 async function config() {
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
@@ -73,14 +72,14 @@ async function validateMerchant({ validationUrl }) {
           url: validationUrl,
           clientID:
             "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4",
-          orderID: "8Y970684TC002102E",
+          orderID: "3A499933V7998380D",
           merchantDomain: "sandbox-applepay-paypal-js-sdk.herokuapp.com",
         },
       }),
     }
   )
     .then((res) => res.json())
-    .then(res => res.data.applePayMerchantSession)
+    .then((res) => res.data.applePayMerchantSession)
     .catch(console.error);
 }
 
@@ -99,7 +98,7 @@ async function setupApplepay() {
   // throw new Error("applepay is not eligible");
   // }
 
-  console.log(JSON.stringify(await  config(), null, 4))
+  console.log(JSON.stringify(await config(), null, 4));
 
   document.getElementById("applepay-container").innerHTML =
     '<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">';
@@ -114,8 +113,7 @@ async function setupApplepay() {
       currencyCode: "USD",
       merchantCapabilities: ["supports3DS"],
       supportedNetworks: ["masterCard", "discover", "visa", "amex"],
-      requiredShippingContactFields: [
-      ],
+      requiredShippingContactFields: [],
       total: {
         label: "Demo",
         type: "final",
@@ -126,30 +124,35 @@ async function setupApplepay() {
     var session = new ApplePaySession(4, applePayPaymentRequest);
 
     session.onvalidatemerchant = (event) => {
-
       validateMerchant({
-          validationUrl: event.validationURL,
-        })
+        validationUrl: event.validationURL,
+      })
         .then((merchantSession) => {
-          console.log(merchantSession)
-          const payload = atob(merchantSession.session)
+          console.log(merchantSession);
+          const payload = atob(merchantSession.session);
           session.completeMerchantValidation(JSON.parse(payload));
         })
         .catch((err) => {
-            console.error(err)
+          console.error(err);
           session.abort();
         });
     };
 
     session.onpaymentmethodselected = (event) => {
-      console.log(JSON.stringify({
-        method: "onpaymentmethodselected",
-        ...event
-      }, null, 4))
-    }
+      console.log(
+        JSON.stringify(
+          {
+            method: "onpaymentmethodselected",
+            ...event,
+          },
+          null,
+          4
+        )
+      );
+    };
 
     session.onshippingcontactselected = (event) => {
-      console.log("-- onshippingcontactselected --")
+      console.log("-- onshippingcontactselected --");
       const shippingContactUpdate = {};
       session.completeShippingContactSelection(shippingContactUpdate);
     };
@@ -161,11 +164,15 @@ async function setupApplepay() {
       session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
     };
 
+    session.onpaymentauthorized = (event) => {
+      alert("onpaymentauthorized")
+    } 
+
     session.begin();
   }
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    console.log("DOMContentLoaded")
+  console.log("DOMContentLoaded");
   setupApplepay().catch(console.log);
 });
