@@ -255,7 +255,7 @@ async function setupApplepay() {
         },
       ],
       shippingType: "shipping",
-      requiredBillingContactFields: ["postalAddress", "name", "phoneticName"],
+      requiredBillingContactFields: ["postalAddress", "name", /*"phoneticName"*/],
       requiredShippingContactFields: [
         "postalAddress",
         "name",
