@@ -370,10 +370,8 @@ async function setupApplepay() {
       console.log(event.paymentMethod); // {type: "credit"}
 
       session.completePaymentMethodSelection({
-        newTotal: {
-          ...applePayPaymentRequest.total,
-        },
-        newLineItems: [...applePayPaymentRequest.lineItems],
+        newTotal: applePayPaymentRequest.total,
+        newLineItems: applePayPaymentRequest.lineItems,
         errors: [],
       });
     };
@@ -401,19 +399,19 @@ async function setupApplepay() {
         event.shippingContact.postalCode
       );
 
-      const goods = applePayPaymentRequest.lineItems.find(
+      const goodsItem = applePayPaymentRequest.lineItems.find(
         (item) => item.label === "Goods"
       );
 
       const newLineItems = [
-        goods,
+        { ...goodsItem },
         {
           label: "Shipping",
           amount: newShippingMethods[0]?.amount,
         },
         {
           label: "Sales Tax",
-          amount: (taxRate * parseFloat(goods.amount)).toFixed(2),
+          amount: (taxRate * parseFloat(goodsItem.amount)).toFixed(2),
         },
       ];
 
