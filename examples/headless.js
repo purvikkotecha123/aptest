@@ -406,14 +406,16 @@ async function setupApplepay() {
         ).toString(),
       });
 
+
       let totalAmount = newLineItems
         .reduce((total, item) => total + parseFloat(item.amount), 0)
-        .toString();
+
+        console.log(JSON.stringify({ totalAmount, newLineItems }, null, 4))
 
       const shippingContactUpdate = {
         newTotal: {
           label: "Demo (Card is not charged)",
-          amount: totalAmount,
+          amount: totalAmount.toString(),
           type: "final",
         },
         newLineItems,
