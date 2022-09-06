@@ -289,6 +289,7 @@ async function setupApplepay() {
         });
 
       } catch(err) {
+        console.error(err)
         session.completePayment({
           status: window.ApplePaySession.STATUS_FAILURE
       });
