@@ -397,35 +397,32 @@ async function setupApplepay() {
         event.shippingContact.postalCode
       );
 
+      const goods = applePayPaymentRequest.lineItems.find((item) => item.label === "Goods")
+
       const newLineItems = [
-        {
-          label: "Goods",
-          amount: "1.00",
-        },
+        goods,
         {
           label: "Shipping",
           amount: newShippingMethods[0]?.amount,
         },
+        {
+          label: "Sales Tax",
+          amount: (
+            taxRate *
+            parseFloat(goods.amount)
+          ).toFixed(2),
+        }
       ];
-
-      newLineItems.push({
-        label: "Sales Tax",
-        amount: (
-          taxRate *
-          parseFloat(newLineItems.find((item) => item.label === "Goods").amount)
-        ).toString(),
-      });
-
 
       let totalAmount = newLineItems
         .reduce((total, item) => total + parseFloat(item.amount), 0)
 
-        console.log(JSON.stringify({ totalAmount, newLineItems }, null, 4))
+      console.log(JSON.stringify({ totalAmount, newLineItems }, null, 4))
 
       const shippingContactUpdate = {
         newTotal: {
           label: "Demo (Card is not charged)",
-          amount: totalAmount.toString(),
+          amount: totalAmount.toFixed(2),
           type: "final",
         },
         newLineItems,
