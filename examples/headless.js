@@ -6,18 +6,20 @@ const CLIENT_ID =
 async function createOrder(payload) {
   const basicAuth = btoa(`${CLIENT_ID}:`);
 
-  const accessToken = await fetch("https://api.sandbox.paypal.com/v1/oauth2/token", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuth}`,
-    },
-    body: "grant_type=client_credentials",
-  })
+  const accessToken = await fetch(
+    "https://api.sandbox.paypal.com/v1/oauth2/token",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+      },
+      body: "grant_type=client_credentials",
+    }
+  )
     .then((res) => res.json())
     .then((res) => {
       return res.access_token;
     });
-
 
   const res = await fetch("https://api.sandbox.paypal.com/v2/checkout/orders", {
     method: "POST",
@@ -33,7 +35,6 @@ async function createOrder(payload) {
     id,
   };
 }
-
 
 async function config() {
   return await fetch(
@@ -74,7 +75,7 @@ async function config() {
     .catch(console.error);
 }
 
-let orderID
+let orderID;
 
 async function validateMerchant({ validationUrl }) {
   const { id } = await createOrder({
@@ -86,13 +87,13 @@ async function validateMerchant({ validationUrl }) {
           value: "1.00",
         },
         payee: {
-          merchant_id: "2V9L63AM2BYKC"
-        }
+          merchant_id: "2V9L63AM2BYKC",
+        },
       },
     ],
-  })
+  });
 
-  orderID = id
+  orderID = id;
 
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
@@ -135,7 +136,7 @@ async function validateMerchant({ validationUrl }) {
     .catch(console.error);
 }
 
-async function approvePayment({ orderID, payment }){
+async function approvePayment({ orderID, payment }) {
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?ApproveApplePayPayment",
     {
@@ -164,9 +165,9 @@ async function approvePayment({ orderID, payment }){
           )
         }`,
         variables: {
-          token: payment.token, 
-          billingContact: payment.billingContact, 
-          shippingContact: payment.shippingContact, 
+          token: payment.token,
+          billingContact: payment.billingContact,
+          shippingContact: payment.shippingContact,
           clientID: CLIENT_ID,
           orderID,
         },
@@ -175,6 +176,10 @@ async function approvePayment({ orderID, payment }){
   )
     .then((res) => res.json())
     .catch(console.error);
+}
+
+async function fetchShippingUpdate(address) {
+  return {};
 }
 
 async function setupApplepay() {
@@ -207,6 +212,50 @@ async function setupApplepay() {
       currencyCode: "USD",
       merchantCapabilities: ["supports3DS"],
       supportedNetworks: ["masterCard", "discover", "visa", "amex"],
+      shippingMethods: [
+        {
+          label: "Free Standard Shipping",
+          amount: "0.00",
+          detail: "Arrives in 5-7 days",
+          identifier: "standardShipping",
+          dateComponentsRange: {
+            startDateComponents: {
+              years: 2022,
+              months: 9,
+              days: 11,
+              hours: 0,
+            },
+            endDateComponents: {
+              years: 2022,
+              months: 9,
+              days: 13,
+              hours: 0,
+            },
+          },
+        },
+        {
+          label: "Express Shipping",
+          amount: "1.00",
+          detail: "Arrives in 2-3 days",
+          identifier: "expressShipping",
+          dateComponentsRange: {
+            startDateComponents: {
+              years: 2022,
+              months: 9,
+              days: 8,
+              hours: 0,
+            },
+            endDateComponents: {
+              years: 2022,
+              months: 9,
+              days: 9,
+              hours: 0,
+            },
+          },
+        },
+      ],
+      shippingType: "shipping",
+      requiredBillingContactFields: ["postalAddress", "name", "phoneticName"],
       requiredShippingContactFields: [
         "postalAddress",
         "name",
@@ -224,9 +273,9 @@ async function setupApplepay() {
         },
       ],
       total: {
-        label: "Demo",
+        label: "Demo (Card is not charged)",
+        amount: "1.99",
         type: "final",
-        amount: "99.99",
       },
     };
 
@@ -248,7 +297,7 @@ async function setupApplepay() {
     };
 
     session.onpaymentmethodselected = () => {
-      console.log("onpaymentmethodselected")
+      console.log("onpaymentmethodselected");
 
       session.completePaymentMethodSelection({
         newTotal: {
@@ -259,8 +308,8 @@ async function setupApplepay() {
     };
 
     session.onshippingcontactselected = (event) => {
-      console.log("onshippingcontactselected")
-      console.log(JSON.stringify(event, null, 4))
+      console.log("onshippingcontactselected");
+      console.log(JSON.stringify(event, null, 4));
 
       const shippingContactUpdate = {
         newTotal: {
@@ -278,24 +327,23 @@ async function setupApplepay() {
         },
         newLineItems: [],
       };
-      session.completeShippingMethodSelection(shippingMethodUpdate); 
+      session.completeShippingMethodSelection(shippingMethodUpdate);
     };
 
     session.onpaymentauthorized = async (payment) => {
       try {
         console.log("onpaymentauthorized");
-        console.log(payment, null, 4)
-        await approvePayment({ orderID, payment })
-      
-        session.completePayment({
-          status: window.ApplePaySession.STATUS_SUCCESS
-        });
+        console.log(payment, null, 4);
+        await approvePayment({ orderID, payment });
 
-      } catch(err) {
-        console.error(err)
         session.completePayment({
-          status: window.ApplePaySession.STATUS_FAILURE
-      });
+          status: window.ApplePaySession.STATUS_SUCCESS,
+        });
+      } catch (err) {
+        console.error(err);
+        session.completePayment({
+          status: window.ApplePaySession.STATUS_FAILURE,
+        });
       }
     };
 
