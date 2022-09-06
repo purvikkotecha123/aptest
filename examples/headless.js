@@ -248,6 +248,8 @@ async function setupApplepay() {
     };
 
     session.onpaymentmethodselected = () => {
+      console.log("onpaymentmethodselected")
+
       session.completePaymentMethodSelection({
         newTotal: {
           ...applePayPaymentRequest.total,
@@ -257,6 +259,9 @@ async function setupApplepay() {
     };
 
     session.onshippingcontactselected = (event) => {
+      console.log("onshippingcontactselected")
+      console.log(JSON.stringify(event, null, 4))
+
       const shippingContactUpdate = {
         newTotal: {
           ...applePayPaymentRequest.total,
@@ -279,6 +284,7 @@ async function setupApplepay() {
     session.onpaymentauthorized = async (payment) => {
       try {
         console.log("onpaymentauthorized");
+        console.log(payment, null, 4)
         await approvePayment({ orderID, payment })
       
         session.completePayment({
