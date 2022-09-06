@@ -76,6 +76,8 @@ async function config() {
     .catch(console.error);
 }
 
+let orderId
+
 async function validateMerchant({ validationUrl }) {
   const { id } = await createOrder({
     intent: "CAPTURE",
@@ -91,6 +93,8 @@ async function validateMerchant({ validationUrl }) {
       },
     ],
   })
+
+  orderId = id
 
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
@@ -124,6 +128,49 @@ async function validateMerchant({ validationUrl }) {
           clientID: CLIENT_ID,
           orderID: id,
           merchantDomain: "sandbox-applepay-paypal-js-sdk.herokuapp.com",
+        },
+      }),
+    }
+  )
+    .then((res) => res.json())
+    .then((res) => res.data.applePayMerchantSession)
+    .catch(console.error);
+}
+
+async function approvePayment({ orderID, payment }){
+  return await fetch(
+    "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?ApproveApplePayPayment",
+    {
+      method: "POST",
+      // credentials: "include",
+      // mode: "no-cors", // no-cors, *cors, same-origin
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        query: `
+        mutation ApproveApplePayPayment(
+          $token: ApplePayPaymentToken!
+          $orderID: String!
+           $clientID : String!
+           $billingContact: ApplePayPaymentContact!
+           $shippingContact: ApplePayPaymentContact
+        ) {
+          approveApplePayPayment(
+            token: $token
+            orderID: $orderID
+            clientID: $clientID
+            billingContact: $billingContact
+            shippingContact: $shippingContact
+          )
+        }`,
+        variables: {
+          token, 
+          billingContact: payment.billingContact, 
+          shippingContact: payment.shippingContact, 
+          clientID: CLIENT_ID,
+          orderID,
         },
       }),
     }
@@ -232,9 +279,20 @@ async function setupApplepay() {
       session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
     };
 
-    session.onpaymentauthorized = (event) => {
-      alert("onpaymentauthorized");
-      session.completePaymentMethodSelection({});
+    session.onpaymentauthorized = async (payment) => {
+      try {
+        console.log("onpaymentauthorized");
+        await approvePayment({ orderID, payment })
+      
+        session.completePayment({
+          status: window.ApplePaySession.STATUS_SUCCESS
+        });
+
+      } catch(err) {
+        session.completePayment({
+          status: window.ApplePaySession.STATUS_FAILURE
+      });
+      }
     };
 
     session.begin();
