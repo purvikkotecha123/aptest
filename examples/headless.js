@@ -309,7 +309,7 @@ async function setupApplepay() {
 
     session.onshippingcontactselected = (event) => {
       console.log("onshippingcontactselected");
-      console.log(JSON.stringify(event, null, 4));
+      console.log(JSON.stringify(event.shippingContact, null, 4));
 
       const shippingContactUpdate = {
         newTotal: {
