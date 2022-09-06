@@ -203,9 +203,13 @@ const applepay = {
 * Merchant integration
 */
 
+function randomNumber(min, max) { 
+  return Math.random() * (max - min) + min;
+} 
+
 async function caclulateShipping(postalCode) {
   return {
-    taxRate: 0.0725, // 7.25%
+    taxRate: randomNumber(0.01, 0.0725), // 1% - 7.25%
     newShippingMethods: [
       {
         label: "Free Standard Shipping",
