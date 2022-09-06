@@ -203,23 +203,7 @@ const applepay = {
 * Merchant integration
 */
 
-async function caclulateShipping(address) {
-  /*
-  {
-    "administrativeArea": "CA",
-    "country": "United States",
-    "countryCode": "US",
-    "familyName": "",
-    "givenName": "",
-    "locality": "San Jose",
-    "phoneticFamilyName": "",
-    "phoneticGivenName": "",
-    "postalCode": "95131",
-    "subAdministrativeArea": "",
-    "subLocality": ""
-}
-*/
-
+async function caclulateShipping(postalCode) {
   return {
     taxRate: 0.0725, // 7.25%
     newShippingMethods: [
@@ -393,6 +377,7 @@ async function setupApplepay() {
         newLineItems: [
           ...applePayPaymentRequest.lineItems
         ],
+        errors: []
       });
     };
 
@@ -409,7 +394,7 @@ async function setupApplepay() {
       console.log(JSON.stringify(event.shippingContact, null, 4));
 
       const { newShippingMethods, taxRate } = await caclulateShipping(
-        event.shippingContact
+        event.shippingContact.postalCode
       );
 
       const newLineItems = [
@@ -445,6 +430,7 @@ async function setupApplepay() {
         },
         newLineItems,
         newShippingMethods,
+        errors: []
       };
 
       session.completeShippingContactSelection(shippingContactUpdate);
@@ -474,7 +460,9 @@ async function setupApplepay() {
             amount: "2.00",
           },
         ],
+        errors: []
       };
+
       session.completeShippingMethodSelection(shippingMethodUpdate);
     };
 
