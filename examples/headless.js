@@ -288,8 +288,6 @@ async function setupApplepay() {
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
   function onClick() {
-    console.log("CLICK");
-
     const applePayPaymentRequest = {
       countryCode: "US",
       currencyCode: "USD",
@@ -398,7 +396,11 @@ async function setupApplepay() {
 
     session.onshippingcontactselected = async (event) => {
       if (event.shippingContact.countryCode !== "US") {
-        // error
+        return session.completeShippingContactSelection({
+          errors: [
+            new ApplePayError("shippingContactInvalid", "postalCode", "ZIP Code is invalid")
+          ]
+        });
       }
 
       console.log("onshippingcontactselected");
@@ -415,7 +417,7 @@ async function setupApplepay() {
         },
         {
           label: "Shipping",
-          amount: newShippingMethods?.amount,
+          amount: newShippingMethods[0]?.amount,
         },
       ];
 
