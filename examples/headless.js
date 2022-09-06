@@ -1,5 +1,9 @@
 /* eslint-disable  no-alert, no-unused-vars, no-undef */
 
+
+/*
+* SDK Code
+*/
 const CLIENT_ID =
   "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4";
 
@@ -35,6 +39,7 @@ async function createOrder(payload) {
     id,
   };
 }
+
 
 async function config() {
   return await fetch(
@@ -76,6 +81,7 @@ async function config() {
 }
 
 let orderID;
+
 
 async function validateMerchant({ validationUrl }) {
   const { id } = await createOrder({
@@ -133,6 +139,11 @@ async function validateMerchant({ validationUrl }) {
   )
     .then((res) => res.json())
     .then((res) => res.data.applePayMerchantSession)
+    .then((merchantSession) => {
+      // console.log(merchantSession);
+      const payload = atob(merchantSession.session);
+      return JSON.parse(payload)
+    })
     .catch(console.error);
 }
 
@@ -177,6 +188,20 @@ async function approvePayment({ orderID, payment }) {
     .then((res) => res.json())
     .catch(console.error);
 }
+
+
+const applepay = {
+  createOrder,
+  config,
+  validateMerchant,
+  approvePayment
+}
+
+
+
+/*
+* Merchant integration
+*/
 
 async function caclulateShipping(address) {
   /*
@@ -256,8 +281,6 @@ async function setupApplepay() {
   //if (!isApplePayEligible) {
   // throw new Error("applepay is not eligible");
   // }
-
-  console.log(JSON.stringify(await config(), null, 4));
 
   document.getElementById("applepay-container").innerHTML =
     '<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">';
@@ -349,13 +372,11 @@ async function setupApplepay() {
     var session = new ApplePaySession(4, applePayPaymentRequest);
 
     session.onvalidatemerchant = (event) => {
-      validateMerchant({
+      applepay.validateMerchant({
         validationUrl: event.validationURL,
       })
-        .then((merchantSession) => {
-          console.log(merchantSession);
-          const payload = atob(merchantSession.session);
-          session.completeMerchantValidation(JSON.parse(payload));
+        .then((payload) => {
+          session.completeMerchantValidation(payload);
         })
         .catch((err) => {
           console.error(err);
@@ -457,7 +478,7 @@ async function setupApplepay() {
       try {
         console.log("onpaymentauthorized");
         console.log(payment, null, 4);
-        await approvePayment({ orderID, payment });
+        await applepay.approvePayment({ orderID, payment });
 
         session.completePayment({
           status: window.ApplePaySession.STATUS_SUCCESS,
