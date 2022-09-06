@@ -76,7 +76,7 @@ async function config() {
     .catch(console.error);
 }
 
-let orderId
+let orderID
 
 async function validateMerchant({ validationUrl }) {
   const { id } = await createOrder({
@@ -94,7 +94,7 @@ async function validateMerchant({ validationUrl }) {
     ],
   })
 
-  orderId = id
+  orderID = id
 
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?GetApplepayConfig",
