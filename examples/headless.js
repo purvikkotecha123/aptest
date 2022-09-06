@@ -385,10 +385,10 @@ async function setupApplepay() {
       console.log("onpaymentmethodselected");
 
       session.completePaymentMethodSelection({
-        newTotal: {
+       /* newTotal: {
           ...applePayPaymentRequest.total,
         },
-        newLineItems: [],
+        newLineItems: [],*/
       });
     };
 
