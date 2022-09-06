@@ -178,7 +178,7 @@ async function approvePayment({ orderID, payment }) {
     .catch(console.error);
 }
 
-async function reCaclulateShipping(address) {
+async function caclulateShipping(address) {
   /*
   {
     "administrativeArea": "CA",
@@ -196,25 +196,7 @@ async function reCaclulateShipping(address) {
 */
 
   return {
-    newTotal: {
-      label: "Demo (Card is not charged)",
-      amount: "5.00",
-      type: "final",
-    },
-    newLineItems: [
-      {
-        label: "Goods",
-        amount: "1.00",
-      },
-      {
-        label: "Sales Tax",
-        amount: "2.00",
-      },
-      {
-        label: "Shipping",
-        amount: "2.00",
-      },
-    ],
+    taxRate: 0.0725, // 7.25%
     newShippingMethods: [
       {
         label: "Free Standard Shipping",
@@ -381,41 +363,70 @@ async function setupApplepay() {
         });
     };
 
-    session.onpaymentmethodselected = () => {
+    session.onpaymentmethodselected = (event) => {
       console.log("onpaymentmethodselected");
+      console.log(event.paymentMethod);
 
       session.completePaymentMethodSelection({
-       /* newTotal: {
-          ...applePayPaymentRequest.total,
+        newTotal: {
+          // ...applePayPaymentRequest.total,
         },
-        newLineItems: [],*/
+        newLineItems: [],
       });
     };
 
     session.onshippingcontactselected = async (event) => {
-      if(event.shippingContact.countryCode !== "US"){
-        // error 
-
+      if (event.shippingContact.countryCode !== "US") {
+        // error
       }
 
       console.log("onshippingcontactselected");
       console.log(JSON.stringify(event.shippingContact, null, 4));
 
-      const { newShippingMethods, newLineItems, newTotal } = await reCaclulateShipping(event.shippingContact)
+      const { newShippingMethods, taxRate } = await caclulateShipping(
+        event.shippingContact
+      );
+
+      const newLineItems = [
+        {
+          label: "Goods",
+          amount: "1.00",
+        },
+        {
+          label: "Shipping",
+          amount: newShippingMethods?.amount,
+        },
+      ];
+
+      newLineItems.push({
+        label: "Sales Tax",
+        amount: (
+          taxRate *
+          parseFloat(newLineItems.find((item) => item.label === "Goods").amount)
+        ).toString(),
+      });
+
+      let totalAmount = newLineItems
+        .reduce((total, item) => total + parseFloat(item.amount), 0)
+        .toString();
 
       const shippingContactUpdate = {
-        newTotal,
+        newTotal: {
+          label: "Demo (Card is not charged)",
+          amount: totalAmount,
+          type: "final",
+        },
         newLineItems,
-        newShippingMethods
+        newShippingMethods,
       };
 
       session.completeShippingContactSelection(shippingContactUpdate);
     };
 
     session.onshippingmethodselected = (event) => {
-      console.log("onshippingmethodselected")
-      console.log(JSON.stringify(event.shippingMethod, null, 4))
-      
+      console.log("onshippingmethodselected");
+      console.log(JSON.stringify(event.shippingMethod, null, 4));
+
       const shippingMethodUpdate = {
         newTotal: {
           label: "Demo (Card is not charged)",
@@ -435,7 +446,7 @@ async function setupApplepay() {
             label: "Shipping",
             amount: "2.00",
           },
-        ]
+        ],
       };
       session.completeShippingMethodSelection(shippingMethodUpdate);
     };
