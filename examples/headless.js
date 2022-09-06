@@ -384,13 +384,15 @@ async function setupApplepay() {
 
     session.onpaymentmethodselected = (event) => {
       console.log("onpaymentmethodselected");
-      console.log(event.paymentMethod);
+      console.log(event.paymentMethod); // {type: "credit"}
 
       session.completePaymentMethodSelection({
         newTotal: {
-          // ...applePayPaymentRequest.total,
+          ...applePayPaymentRequest.total,
         },
-        newLineItems: [],
+        newLineItems: [
+          ...applePayPaymentRequest.lineItems
+        ],
       });
     };
 
