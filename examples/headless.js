@@ -331,11 +331,11 @@ async function setupApplepay() {
       lineItems: [
         {
           label: "Goods",
-          amount: "1.00",
+          amount: "100.00",
         },
         {
           label: "Sales Tax",
-          amount: "1.00",
+          amount: "7.00",
         },
         {
           label: "Shipping",
@@ -344,7 +344,7 @@ async function setupApplepay() {
       ],
       total: {
         label: "Demo (Card is not charged)",
-        amount: "3.00",
+        amount: "1.08",
         type: "final",
       },
     };
