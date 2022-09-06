@@ -178,8 +178,86 @@ async function approvePayment({ orderID, payment }) {
     .catch(console.error);
 }
 
-async function fetchShippingUpdate(address) {
-  return {};
+async function reCaclulateShipping(address) {
+  /*
+  {
+    "administrativeArea": "CA",
+    "country": "United States",
+    "countryCode": "US",
+    "familyName": "",
+    "givenName": "",
+    "locality": "San Jose",
+    "phoneticFamilyName": "",
+    "phoneticGivenName": "",
+    "postalCode": "95131",
+    "subAdministrativeArea": "",
+    "subLocality": ""
+}
+*/
+
+  return {
+    newTotal: {
+      label: "Demo (Card is not charged)",
+      amount: "5.00",
+      type: "final",
+    },
+    newLineItems: [
+      {
+        label: "Goods",
+        amount: "1.00",
+      },
+      {
+        label: "Sales Tax",
+        amount: "2.00",
+      },
+      {
+        label: "Shipping",
+        amount: "2.00",
+      },
+    ],
+    newShippingMethods: [
+      {
+        label: "Free Standard Shipping",
+        amount: "0.00",
+        detail: "Arrives in 5-7 days",
+        identifier: "standardShipping",
+        dateComponentsRange: {
+          startDateComponents: {
+            years: 2022,
+            months: 9,
+            days: 11,
+            hours: 0,
+          },
+          endDateComponents: {
+            years: 2022,
+            months: 9,
+            days: 13,
+            hours: 0,
+          },
+        },
+      },
+      {
+        label: "Express Shipping",
+        amount: "1.00",
+        detail: "Arrives in 2-3 days",
+        identifier: "expressShipping",
+        dateComponentsRange: {
+          startDateComponents: {
+            years: 2022,
+            months: 9,
+            days: 8,
+            hours: 0,
+          },
+          endDateComponents: {
+            years: 2022,
+            months: 9,
+            days: 9,
+            hours: 0,
+          },
+        },
+      },
+    ],
+  };
 }
 
 async function setupApplepay() {
@@ -255,7 +333,10 @@ async function setupApplepay() {
         },
       ],
       shippingType: "shipping",
-      requiredBillingContactFields: ["postalAddress", "name", /*"phoneticName"*/],
+      requiredBillingContactFields: [
+        "postalAddress",
+        "name" /*"phoneticName"*/,
+      ],
       requiredShippingContactFields: [
         "postalAddress",
         "name",
@@ -264,17 +345,21 @@ async function setupApplepay() {
       ],
       lineItems: [
         {
+          label: "Goods",
+          amount: "1.00",
+        },
+        {
           label: "Sales Tax",
-          amount: "0.00",
+          amount: "1.00",
         },
         {
           label: "Shipping",
-          amount: "0.00",
+          amount: "1.00",
         },
       ],
       total: {
         label: "Demo (Card is not charged)",
-        amount: "1.99",
+        amount: "3.00",
         type: "final",
       },
     };
@@ -307,25 +392,50 @@ async function setupApplepay() {
       });
     };
 
-    session.onshippingcontactselected = (event) => {
+    session.onshippingcontactselected = async (event) => {
+      if(event.shippingContact.countryCode !== "US"){
+        // error 
+
+      }
+
       console.log("onshippingcontactselected");
       console.log(JSON.stringify(event.shippingContact, null, 4));
 
+      const { newShippingMethods, newLineItems, newTotal } = await reCaclulateShipping(event.shippingContact)
+
       const shippingContactUpdate = {
-        newTotal: {
-          ...applePayPaymentRequest.total,
-        },
-        newLineItems: [],
+        newTotal,
+        newLineItems,
+        newShippingMethods
       };
+
       session.completeShippingContactSelection(shippingContactUpdate);
     };
 
     session.onshippingmethodselected = (event) => {
+      console.log("onshippingmethodselected")
+      console.log(JSON.stringify(event.shippingMethod, null, 4))
+      
       const shippingMethodUpdate = {
         newTotal: {
-          ...applePayPaymentRequest.total,
+          label: "Demo (Card is not charged)",
+          amount: "5.00",
+          type: "final",
         },
-        newLineItems: [],
+        newLineItems: [
+          {
+            label: "Goods",
+            amount: "1.00",
+          },
+          {
+            label: "Sales Tax",
+            amount: "2.00",
+          },
+          {
+            label: "Shipping",
+            amount: "2.00",
+          },
+        ]
       };
       session.completeShippingMethodSelection(shippingMethodUpdate);
     };
