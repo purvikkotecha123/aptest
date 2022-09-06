@@ -455,7 +455,14 @@ async function setupApplepay() {
       console.log(JSON.stringify(event.shippingMethod, null, 4));
 
       const newLineItems = [
-        ...applePayPaymentRequest.lineItems,
+        {
+          label: "Goods",
+          amount: applePayPaymentRequest.lineItems.find(item => item.label == "Goods")?.amount
+        },
+        {
+          label: "Sales Tax",
+          amount: applePayPaymentRequest.lineItems.find(item => item.label == "Sales Tax")?.amount
+        },
         {
           label: "Shipping",
           amount: event.shippingMethod.amount
