@@ -166,7 +166,7 @@ async function approvePayment({ orderID, payment }){
           )
         }`,
         variables: {
-          token, 
+          token: payment.token, 
           billingContact: payment.billingContact, 
           shippingContact: payment.shippingContact, 
           clientID: CLIENT_ID,
