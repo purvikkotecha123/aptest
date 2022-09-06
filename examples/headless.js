@@ -4,8 +4,6 @@ const CLIENT_ID =
   "AdVrVyh_UduEct9CWFHsaHRXKVxbnCDleEJdVOZdb52qSjrWkKDNd6E1CNvd5BvNrGSsXzgQ238dGgZ4";
 
 async function createOrder(payload) {
-
-
   const basicAuth = btoa(`${CLIENT_ID}:`);
 
   const accessToken = await fetch("https://api.sandbox.paypal.com/v1/oauth2/token", {
@@ -176,7 +174,6 @@ async function approvePayment({ orderID, payment }){
     }
   )
     .then((res) => res.json())
-    .then((res) => res.data.applePayMerchantSession)
     .catch(console.error);
 }
 
@@ -276,7 +273,7 @@ async function setupApplepay() {
         },
         newLineItems: [],
       };
-      session.completeShippingMethodSelection(shippingMethodUpdate); // Set shippingMethodUpdate=null if there are no updates.
+      session.completeShippingMethodSelection(shippingMethodUpdate); 
     };
 
     session.onpaymentauthorized = async (payment) => {
