@@ -197,9 +197,7 @@ const applepay = {
  * Merchant integration
  */
 
-function randomNumber(min, max) {
-  return Math.random() * (max - min) + min;
-}
+const randomNumber = (min, max) => Math.random() * (max - min) + min;
 
 async function caclulateShipping(postalCode) {
   return {
@@ -270,7 +268,7 @@ async function setupApplepay() {
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
   function onClick() {
-    const applePayPaymentRequest = {
+    const paymentRequest = {
       countryCode: "US",
       currencyCode: "USD",
       merchantCapabilities: ["supports3DS"],
@@ -349,7 +347,7 @@ async function setupApplepay() {
       },
     };
 
-    var session = new ApplePaySession(4, applePayPaymentRequest);
+    var session = new ApplePaySession(4, paymentRequest);
 
     session.onvalidatemerchant = (event) => {
       applepay
@@ -370,16 +368,16 @@ async function setupApplepay() {
       console.log(event.paymentMethod); // {type: "credit"}
 
       session.completePaymentMethodSelection({
-        newTotal: applePayPaymentRequest.total,
-        newLineItems: applePayPaymentRequest.lineItems,
+        newTotal: paymentRequest.total,
+        newLineItems: paymentRequest.lineItems,
         errors: [],
       });
     };
 
     session.onshippingcontactselected = async (event) => {
       /*
-      * US Shipping only
-      */
+       * US Shipping only
+       */
       if (event.shippingContact.countryCode !== "US") {
         return session.completeShippingContactSelection({
           errors: [
@@ -399,7 +397,7 @@ async function setupApplepay() {
         event.shippingContact.postalCode
       );
 
-      const goodsItem = applePayPaymentRequest.lineItems.find(
+      const goodsItem = paymentRequest.lineItems.find(
         (item) => item.label === "Goods"
       );
 
@@ -415,7 +413,7 @@ async function setupApplepay() {
         },
       ];
 
-      let totalAmount = newLineItems.reduce(
+      const totalAmount = newLineItems.reduce(
         (total, item) => total + parseFloat(item.amount),
         0
       );
@@ -432,7 +430,7 @@ async function setupApplepay() {
         label: "Demo (Card is not charged)",
         amount: totalAmount.toFixed(2),
         type: "final",
-      }
+      };
 
       const shippingContactUpdate = {
         newTotal,
@@ -441,11 +439,10 @@ async function setupApplepay() {
         errors: [],
       };
 
-
-      Object.assign(applePayPaymentRequest, {
+      Object.assign(paymentRequest, {
         lineItems: newLineItems,
-        total: newTotal
-      })
+        total: newTotal,
+      });
 
       session.completeShippingContactSelection(shippingContactUpdate);
     };
@@ -456,16 +453,14 @@ async function setupApplepay() {
 
       const newLineItems = [
         {
-          label: "Goods",
-          amount: applePayPaymentRequest.lineItems.find(item => item.label == "Goods")?.amount
+          ...paymentRequest.lineItems.find((item) => item.label == "Goods"),
         },
         {
-          label: "Sales Tax",
-          amount: applePayPaymentRequest.lineItems.find(item => item.label == "Sales Tax")?.amount
+          ...paymentRequest.lineItems.find((item) => item.label == "Sales Tax"),
         },
         {
           label: "Shipping",
-          amount: event.shippingMethod.amount
+          amount: event.shippingMethod.amount,
         },
       ];
 
@@ -478,7 +473,7 @@ async function setupApplepay() {
         label: "Demo (Card is not charged)",
         amount: totalAmount.toFixed(2),
         type: "final",
-      }
+      };
 
       const shippingMethodUpdate = {
         newTotal,
@@ -486,10 +481,10 @@ async function setupApplepay() {
         errors: [],
       };
 
-      Object.assign(applePayPaymentRequest, {
+      Object.assign(paymentRequest, {
         lineItems: newLineItems,
-        total: newTotal
-      })
+        total: newTotal,
+      });
 
       session.completeShippingMethodSelection(shippingMethodUpdate);
     };
