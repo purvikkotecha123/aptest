@@ -269,7 +269,7 @@ async function setupApplepay() {
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
   async function onClick() {
-    const { merchantCapabilities, supportedNetworks } = await config()
+    const { merchantCapabilities, merchantCountry, supportedNetworks } = await config()
 
     console.log({ merchantCapabilities, merchantCountry, supportedNetworks })
 
