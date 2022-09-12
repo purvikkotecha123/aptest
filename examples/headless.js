@@ -199,7 +199,7 @@ const applepay = {
 
 const randomNumber = (min, max) => Math.random() * (max - min) + min;
 
-async function caclulateShipping(postalCode) {
+async function calculateShipping(postalCode) {
   return {
     taxRate: randomNumber(0.01, 0.0725), // 1% - 7.25%
     newShippingMethods: [
@@ -267,12 +267,14 @@ async function setupApplepay() {
 
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
-  function onClick() {
+  async function onClick() {
+    const { merchantCapabilities, supportedNetworks } = await config()
+
     const paymentRequest = {
       countryCode: "US",
       currencyCode: "USD",
-      merchantCapabilities: ["supports3DS"],
-      supportedNetworks: ["masterCard", "discover", "visa", "amex"],
+      merchantCapabilities,
+      supportedNetworks,
       shippingMethods: [
         {
           label: "Free Standard Shipping",
@@ -393,9 +395,9 @@ async function setupApplepay() {
       console.log("onshippingcontactselected");
       console.log(JSON.stringify(event.shippingContact, null, 4));
 
-      const { newShippingMethods, taxRate } = await caclulateShipping(
-        event.shippingContact.postalCode
-      );
+      const { postalCode } = event.shippingContact;
+
+      const { newShippingMethods, taxRate } = await calculateShipping(postalCode);
 
       const goodsItem = paymentRequest.lineItems.find(
         (item) => item.label === "Goods"
