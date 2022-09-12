@@ -75,6 +75,7 @@ async function config() {
     }
   )
     .then((res) => res.json())
+    .then(res => res.data.applepayConfig)
     .catch(console.error);
 }
 
@@ -268,8 +269,7 @@ async function setupApplepay() {
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
   async function onClick() {
-    const { data } = await config()
-    const { merchantCapabilities, supportedNetworks } = data;
+    const { merchantCapabilities, supportedNetworks } = await config()
 
     const paymentRequest = {
       countryCode: "US",
