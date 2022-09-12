@@ -249,6 +249,8 @@ async function calculateShipping(postalCode) {
 }
 
 async function setupApplepay() {
+  const { merchantCapabilities, merchantCountry, supportedNetworks } = await config()
+
   //  const applepay = paypal.Applepay();
   /*
     const {
@@ -269,8 +271,6 @@ async function setupApplepay() {
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
   async function onClick() {
-    const { merchantCapabilities, merchantCountry, supportedNetworks } = await config()
-
     console.log({ merchantCapabilities, merchantCountry, supportedNetworks })
 
     const paymentRequest = {
