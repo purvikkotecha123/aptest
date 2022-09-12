@@ -271,12 +271,12 @@ async function setupApplepay() {
   async function onClick() {
     const { merchantCapabilities, supportedNetworks } = await config()
 
-    console.log({ merchantCapabilities, supportedNetworks })
+    console.log({ merchantCapabilities, merchantCountry, supportedNetworks })
 
     const paymentRequest = {
-      countryCode: "US",
+      countryCode: merchantCountry,
       currencyCode: "USD",
-      merchantCapabilities,
+      merchantCapabilities: ["supports3DS"],
       supportedNetworks,
       shippingMethods: [
         {
