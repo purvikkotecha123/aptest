@@ -271,6 +271,8 @@ async function setupApplepay() {
   async function onClick() {
     const { merchantCapabilities, supportedNetworks } = await config()
 
+    console.log({ merchantCapabilities, supportedNetworks })
+
     const paymentRequest = {
       countryCode: "US",
       currencyCode: "USD",
