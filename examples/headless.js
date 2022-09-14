@@ -146,6 +146,7 @@ async function validateMerchant({ validationUrl }) {
 }
 
 async function approvePayment({ orderID, payment }) {
+  console.log(JSON.stringify(payment, null, 4))
   return await fetch(
     "https://cors-anywhere.herokuapp.com/https://www.sandbox.paypal.com/graphql?ApproveApplePayPayment",
     {
@@ -517,5 +518,8 @@ async function setupApplepay() {
 
 document.addEventListener("DOMContentLoaded", (event) => {
   console.log("DOMContentLoaded");
-  setupApplepay().catch(console.log);
+
+  if(ApplePaySession?.supportsVersion(4) && ApplePaySession?.canMakePayments()) {
+    setupApplepay().catch(console.log);
+  }
 });
