@@ -499,7 +499,23 @@ async function setupApplepay() {
       try {
         console.log("onpaymentauthorized");
         console.log(JSON.stringify(event, null, 4));
-        await applepay.approvePayment({ orderID, payment: event.payment });
+
+        const { id } = await createOrder({
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "USD",
+                value: paymentRequest.total.amount,
+              },
+              payee: {
+                merchant_id: "2V9L63AM2BYKC",
+              },
+            },
+          ],
+        });
+
+        await applepay.approvePayment({ orderID: id, payment: event.payment });
 
         session.completePayment({
           status: window.ApplePaySession.STATUS_SUCCESS,
