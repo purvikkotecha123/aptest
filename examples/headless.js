@@ -515,8 +515,6 @@ async function setupApplepay() {
           ],
         });
 
-        event.payment.billingContact.postalCode = "ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!ABC@@@@@!!!!!"
-
         await applepay.approvePayment({ orderID: id, payment: event.payment });
 
         session.completePayment({
