@@ -495,11 +495,11 @@ async function setupApplepay() {
       session.completeShippingMethodSelection(shippingMethodUpdate);
     };
 
-    session.onpaymentauthorized = async (payment) => {
+    session.onpaymentauthorized = async (event) => {
       try {
         console.log("onpaymentauthorized");
-        console.log(payment, null, 4);
-        await applepay.approvePayment({ orderID, payment });
+        console.log(JSON.stringify(event, null, 4));
+        await applepay.approvePayment({ orderID, payment: event.payment });
 
         session.completePayment({
           status: window.ApplePaySession.STATUS_SUCCESS,
