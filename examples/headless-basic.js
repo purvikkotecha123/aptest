@@ -1,0 +1,141 @@
+/* eslint-disable  no-alert, no-unused-vars, no-undef */
+
+
+/*
+ * Merchant integration - basic amount
+ */
+
+async function setupApplepay() {
+  const applepay = paypal.Applepay();
+    const {
+      isEligible,
+      countryCode,
+      currencyCode,
+      merchantCapabilities,
+      supportedNetworks,
+    } = await  applepay.config();
+
+  if (!isEligible) {
+    throw new Error("applepay is not eligible");
+  }
+
+  document.getElementById("applepay-container").innerHTML =
+    '<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">';
+
+  document.getElementById("btn-appl").addEventListener("click", onClick);
+
+  async function onClick() {
+    console.log({ merchantCapabilities, currencyCode, supportedNetworks })
+
+    const paymentRequest = {
+      countryCode,
+      currencyCode: 'USD',
+      merchantCapabilities,
+      supportedNetworks,
+      shippingType: "shipping",
+      requiredBillingContactFields: [
+        "name",
+        "phone",
+        "email",
+        "postalAddress",
+      ],
+      requiredShippingContactFields: [
+        "postalAddress",
+        "name",
+        "phone",
+        "email",
+      ],
+      total: {
+        label: "Demo (Card is not charged)",
+        amount: "0.01",
+        type: "final",
+      },
+    };
+
+    var session = new ApplePaySession(4, paymentRequest);
+
+    session.onvalidatemerchant = (event) => {
+      applepay
+        .validateMerchant({
+          validationUrl: event.validationURL,
+        })
+        .then((payload) => {
+          session.completeMerchantValidation(payload.merchantSession);
+        })
+        .catch((err) => {
+          console.error(err);
+          session.abort();
+        });
+    };
+
+    session.onpaymentmethodselected = (event) => {
+      session.completePaymentMethodSelection({
+        newTotal: paymentRequest.total,
+      });
+    };
+
+
+    session.onpaymentauthorized = async (event) => {
+      try {
+        const order = {
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "USD",
+                value: paymentRequest.total.amount,
+              },
+              payee: {
+                merchant_id: "2V9L63AM2BYKC",
+              },
+            },
+          ],
+        }
+
+        /* Create Order on the Server Side */
+        
+        const { id } = await fetch(`/orders`,{
+          method:'POST',
+          headers : {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(order)
+        }).then((res) => res.json());
+
+        /**
+         * Confirm Payment 
+         */
+        await applepay.confirmOrder({ orderID: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+
+        /*
+        * Capture order (must currently be made on server)
+        */
+        await fetch(`/capture/${id}`, {
+          method: 'POST',
+        });
+
+        session.completePayment({
+          status: window.ApplePaySession.STATUS_SUCCESS,
+        });
+      } catch (err) {
+        console.error(err);
+        session.completePayment({
+          status: window.ApplePaySession.STATUS_FAILURE,
+        });
+      }
+    };
+
+    session.oncancel  = (event) => {
+      console.log("Apple Pay Cancelled !!")
+    }
+
+    session.begin();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", (event) => {
+
+  if(ApplePaySession?.supportsVersion(4) && ApplePaySession?.canMakePayments()) {
+    setupApplepay().catch(console.error);
+  }
+});
