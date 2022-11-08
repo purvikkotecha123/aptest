@@ -516,6 +516,8 @@ async function setupApplepay() {
           ],
         }
 
+        /* Create Order on the Server Side */
+        
         const { id } = await fetch(`/orders`,{
           method:'POST',
           headers : {
@@ -527,7 +529,7 @@ async function setupApplepay() {
         /**
          * Confirm Payment 
          */
-        await applepay.approvePayment({ orderID: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+        await applepay.confirmOrder({ orderID: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
 
         /*
         * Capture order (must currently be made on server)
