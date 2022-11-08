@@ -134,20 +134,7 @@ app.get("/orders/:orderId", async (req, res) => {
 });
 
 app.post("/orders", async (req, res) => {
-  const order = {
-    intent: "CAPTURE",
-    purchase_units: [
-      {
-        amount: {
-          currency_code: "USD",
-          value: "9.99",
-        },
-        payee: {
-          merchant_id: "2V9L63AM2BYKC"
-        }
-      },
-    ],
-  };
+  const order = req.body;
 
   try {
     const { access_token } = await getAccessToken();
@@ -160,7 +147,7 @@ app.post("/orders", async (req, res) => {
         Accept: "application/json",
         Authorization: `Bearer ${access_token}`,
       },
-      data: order
+      data: { ...order}
     });
     res.json(data);
   } catch (err) {
