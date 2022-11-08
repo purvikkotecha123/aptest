@@ -259,7 +259,7 @@ async function setupApplepay() {
       supportedNetworks,
     } = await  applepay.config();
 
-  if (!isApplePayEligible) {
+  if (!isEligible) {
     throw new Error("applepay is not eligible");
   }
 
