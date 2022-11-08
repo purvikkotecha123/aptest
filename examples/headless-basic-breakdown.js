@@ -79,7 +79,8 @@ async function setupApplepay() {
 
     session.onpaymentmethodselected = (event) => {
       session.completePaymentMethodSelection({
-        // newTotal: paymentRequest.total,
+        newTotal: paymentRequest.total,
+        newLineItems: paymentRequest.lineItems
       });
     };
 
