@@ -250,21 +250,18 @@ async function calculateShipping(postalCode) {
 }
 
 async function setupApplepay() {
-  const { merchantCapabilities, merchantCountry, supportedNetworks } = await config()
-
-  //  const applepay = paypal.Applepay();
-  /*
+  const applepay = paypal.Applepay();
     const {
-      isApplePayEligible,
+      isEligible,
       countryCode,
       currencyCode,
       merchantCapabilities,
       supportedNetworks,
-    } = await  config() //applepay.getConfiguration();
-  */
-  //if (!isApplePayEligible) {
-  // throw new Error("applepay is not eligible");
-  // }
+    } = await  applepay.config();
+
+  if (!isApplePayEligible) {
+    throw new Error("applepay is not eligible");
+  }
 
   document.getElementById("applepay-container").innerHTML =
     '<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">';
@@ -275,9 +272,9 @@ async function setupApplepay() {
     console.log({ merchantCapabilities, merchantCountry, supportedNetworks })
 
     const paymentRequest = {
-      countryCode: merchantCountry,
-      currencyCode: "USD",
-      merchantCapabilities: ["supports3DS"],
+      countryCode,
+      currencyCode: 'USD',
+      merchantCapabilities,
       supportedNetworks,
       shippingMethods: [
         {
@@ -323,8 +320,10 @@ async function setupApplepay() {
       ],
       shippingType: "shipping",
       requiredBillingContactFields: [
+        "name",
+        "phone",
+        "email",
         "postalAddress",
-        "name" /*"phoneticName"*/,
       ],
       requiredShippingContactFields: [
         "postalAddress",
@@ -361,7 +360,9 @@ async function setupApplepay() {
           validationUrl: event.validationURL,
         })
         .then((payload) => {
-          session.completeMerchantValidation(payload);
+          session.completeMerchantValidation(payload.merchantSession);
+          console.log("Complete Merchant validation Done !", {payload})
+
         })
         .catch((err) => {
           console.error(err);
@@ -500,7 +501,7 @@ async function setupApplepay() {
         console.log("onpaymentauthorized");
         console.log(JSON.stringify(event, null, 4));
 
-        const { id } = await createOrder({
+        const order = {
           intent: "CAPTURE",
           purchase_units: [
             {
@@ -513,9 +514,31 @@ async function setupApplepay() {
               },
             },
           ],
+        }
+
+        /* Create Order on the Server Side */
+        
+        const { id } = await fetch(`/orders`,{
+          method:'POST',
+          headers : {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(order)
+        }).then((res) => res.json());
+
+        /**
+         * Confirm Payment 
+         */
+        await applepay.confirmOrder({ orderID: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+
+        /*
+        * Capture order (must currently be made on server)
+        */
+        await fetch(`/capture/${id}`, {
+          method: 'POST',
         });
 
-        await applepay.approvePayment({ orderID: id, payment: event.payment });
+
 
         session.completePayment({
           status: window.ApplePaySession.STATUS_SUCCESS,
@@ -527,6 +550,11 @@ async function setupApplepay() {
         });
       }
     };
+
+    session.oncancel  = (event) => {
+      console.log(event);
+      console.log("Apple Pay Cancelled !!")
+    }
 
     session.begin();
   }
