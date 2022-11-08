@@ -376,80 +376,86 @@ async function setupApplepay() {
 
       session.completePaymentMethodSelection({
         newTotal: paymentRequest.total,
-        newLineItems: paymentRequest.lineItems,
-        errors: [],
       });
     };
 
     session.onshippingcontactselected = async (event) => {
+
+      console.log("Your shipping contacts selected is:"+ event.shippingContact)
+      const shippingContactUpdate = { 
+        newTotal: paymentRequest.total,
+        newLineItems: []
+      };
+
       /*
        * US Shipping only
        */
-      if (event.shippingContact.countryCode !== "US") {
-        return session.completeShippingContactSelection({
-          errors: [
-            new ApplePayError(
-              "shippingContactInvalid",
-              "postalCode",
-              "Sorry we only ship to the US currently"
-            ),
-          ],
-        });
-      }
+      //  Commenting out temporarily to test simple integration 
+      // if (event.shippingContact.countryCode !== "US") {
+      //   return session.completeShippingContactSelection({
+      //     errors: [
+      //       new ApplePayError(
+      //         "shippingContactInvalid",
+      //         "postalCode",
+      //         "Sorry we only ship to the US currently"
+      //       ),
+      //     ],
+      //   });
+      // }
 
-      console.log("onshippingcontactselected");
-      console.log(JSON.stringify(event.shippingContact, null, 4));
+      // console.log("onshippingcontactselected");
+      // console.log(JSON.stringify(event.shippingContact, null, 4));
 
-      const { postalCode } = event.shippingContact;
+      // const { postalCode } = event.shippingContact;
 
-      const { newShippingMethods, taxRate } = await calculateShipping(postalCode);
+      // const { newShippingMethods, taxRate } = await calculateShipping(postalCode);
 
-      const goodsItem = paymentRequest.lineItems.find(
-        (item) => item.label === "Goods"
-      );
+      // const goodsItem = paymentRequest.lineItems.find(
+      //   (item) => item.label === "Goods"
+      // );
 
-      const newLineItems = [
-        { ...goodsItem },
-        {
-          label: "Shipping",
-          amount: newShippingMethods[0]?.amount,
-        },
-        {
-          label: "Sales Tax",
-          amount: (taxRate * parseFloat(goodsItem.amount)).toFixed(2),
-        },
-      ];
+      // const newLineItems = [
+      //   { ...goodsItem },
+      //   {
+      //     label: "Shipping",
+      //     amount: newShippingMethods[0]?.amount,
+      //   },
+      //   {
+      //     label: "Sales Tax",
+      //     amount: (taxRate * parseFloat(goodsItem.amount)).toFixed(2),
+      //   },
+      // ];
 
-      const totalAmount = newLineItems.reduce(
-        (total, item) => total + parseFloat(item.amount),
-        0
-      );
+      // const totalAmount = newLineItems.reduce(
+      //   (total, item) => total + parseFloat(item.amount),
+      //   0
+      // );
 
-      console.log(
-        JSON.stringify(
-          { totalAmount, newLineItems, newShippingMethods },
-          null,
-          4
-        )
-      );
+      // console.log(
+      //   JSON.stringify(
+      //     { totalAmount, newLineItems, newShippingMethods },
+      //     null,
+      //     4
+      //   )
+      // );
 
-      const newTotal = {
-        label: "Demo (Card is not charged)",
-        amount: totalAmount.toFixed(2),
-        type: "final",
-      };
+      // const newTotal = {
+      //   label: "Demo (Card is not charged)",
+      //   amount: totalAmount.toFixed(2),
+      //   type: "final",
+      // };
 
-      const shippingContactUpdate = {
-        newTotal,
-        newLineItems,
-        newShippingMethods,
-        errors: [],
-      };
+      // const shippingContactUpdate = {
+      //   newTotal,
+      //   newLineItems,
+      //   newShippingMethods,
+      //   errors: [],
+      // };
 
-      Object.assign(paymentRequest, {
-        lineItems: newLineItems,
-        total: newTotal,
-      });
+      // Object.assign(paymentRequest, {
+      //   lineItems: newLineItems,
+      //   total: newTotal,
+      // });
 
       session.completeShippingContactSelection(shippingContactUpdate);
     };
@@ -457,41 +463,48 @@ async function setupApplepay() {
     session.onshippingmethodselected = (event) => {
       console.log("onshippingmethodselected");
       console.log(JSON.stringify(event.shippingMethod, null, 4));
+      console.log("Your shipping method selected is:", event.shippingMethod);
+      
+      var shippingMethodUpdate = { 
+        newTotal: paymentRequest.total,
+        newLineItems: []
+      }; 
+      
+      //  Commenting out temporarily to test simple integration 
+      // const newLineItems = [
+      //   {
+      //     ...paymentRequest.lineItems.find((item) => item.label == "Goods"),
+      //   },
+      //   {
+      //     ...paymentRequest.lineItems.find((item) => item.label == "Sales Tax"),
+      //   },
+      //   {
+      //     label: "Shipping",
+      //     amount: event.shippingMethod.amount,
+      //   },
+      // ];
 
-      const newLineItems = [
-        {
-          ...paymentRequest.lineItems.find((item) => item.label == "Goods"),
-        },
-        {
-          ...paymentRequest.lineItems.find((item) => item.label == "Sales Tax"),
-        },
-        {
-          label: "Shipping",
-          amount: event.shippingMethod.amount,
-        },
-      ];
+      // let totalAmount = newLineItems.reduce(
+      //   (total, item) => total + parseFloat(item.amount),
+      //   0
+      // );
 
-      let totalAmount = newLineItems.reduce(
-        (total, item) => total + parseFloat(item.amount),
-        0
-      );
+      // const newTotal = {
+      //   label: "Demo (Card is not charged)",
+      //   amount: totalAmount.toFixed(2),
+      //   type: "final",
+      // };
 
-      const newTotal = {
-        label: "Demo (Card is not charged)",
-        amount: totalAmount.toFixed(2),
-        type: "final",
-      };
+      // const shippingMethodUpdate = {
+      //   newTotal,
+      //   newLineItems,
+      //   errors: [],
+      // };
 
-      const shippingMethodUpdate = {
-        newTotal,
-        newLineItems,
-        errors: [],
-      };
-
-      Object.assign(paymentRequest, {
-        lineItems: newLineItems,
-        total: newTotal,
-      });
+      // Object.assign(paymentRequest, {
+      //   lineItems: newLineItems,
+      //   total: newTotal,
+      // });
 
       session.completeShippingMethodSelection(shippingMethodUpdate);
     };
