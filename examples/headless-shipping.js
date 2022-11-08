@@ -316,6 +316,20 @@ async function setupApplepay() {
               amount: {
                 currency_code: "USD",
                 value: paymentRequest.total.amount,
+                breakdown: {
+                    item_total: {
+                      currency_code: "USD",
+                      value: paymentRequest.lineItems[0].amount,
+                    },
+                    tax_total: {
+                      currency_code: "USD",
+                      value: paymentRequest.lineItems[1].amount,
+                    },
+                    shipping: {
+                      currency_code: "USD",
+                      value: paymentRequest.lineItems[2].amount,
+                    },
+                  },
               },
               payee: {
                 merchant_id: "2V9L63AM2BYKC",
