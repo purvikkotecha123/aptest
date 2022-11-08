@@ -32,7 +32,6 @@ async function setupApplepay() {
       currencyCode: 'USD',
       merchantCapabilities,
       supportedNetworks,
-      shippingType: "shipping",
       requiredBillingContactFields: [
         "name",
         "phone",
@@ -40,10 +39,6 @@ async function setupApplepay() {
         "postalAddress",
       ],
       requiredShippingContactFields: [
-        "postalAddress",
-        "name",
-        "phone",
-        "email",
       ],
       total: {
         label: "Demo (Card is not charged)",
@@ -73,7 +68,6 @@ async function setupApplepay() {
         newTotal: paymentRequest.total,
       });
     };
-
 
     session.onpaymentauthorized = async (event) => {
       try {
