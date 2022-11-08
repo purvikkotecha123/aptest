@@ -72,6 +72,7 @@ app.post("/capture/:orderId", async (req, res) => {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      Prefer: 'return=representation',
       Authorization: `Bearer ${access_token}`,
     },
   });
