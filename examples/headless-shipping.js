@@ -180,12 +180,10 @@ async function setupApplepay() {
     };
 
     session.onpaymentmethodselected = (event) => {
-      console.log("onpaymentmethodselected");
-      console.log(event.paymentMethod); // {type: "credit"}
-
-      session.completePaymentMethodSelection({
-        newTotal: paymentRequest.total,
-      });
+        session.completePaymentMethodSelection({
+            newTotal: paymentRequest.total,
+            newLineItems: paymentRequest.lineItems
+        });
     };
 
     session.onshippingcontactselected = async (event) => {
