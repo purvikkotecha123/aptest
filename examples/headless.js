@@ -188,12 +188,12 @@ async function approvePayment({ orderID, payment }) {
     .catch(console.error);
 }
 
-const applepay = {
-  createOrder,
-  config,
-  validateMerchant,
-  approvePayment,
-};
+// const applepay = {
+//   createOrder,
+//   config,
+//   validateMerchant,
+//   approvePayment,
+// };
 
 /*
  * Merchant integration
