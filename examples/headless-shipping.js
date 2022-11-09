@@ -4,13 +4,15 @@
  * SDK Code
  */
 
-
 /*
  * Merchant integration - full shipping
  */
 
 const randomNumber = (min, max) => Math.random() * (max - min) + min;
 
+/*
+ * this is a fake call to a merchant endpoint to calc shipping based off of zip change
+ */
 async function calculateShipping(postalCode) {
   return {
     taxRate: randomNumber(0.01, 0.0725), // 1% - 7.25%
@@ -61,13 +63,13 @@ async function calculateShipping(postalCode) {
 
 async function setupApplepay() {
   const applepay = paypal.Applepay();
-    const {
-      isEligible,
-      countryCode,
-      currencyCode,
-      merchantCapabilities,
-      supportedNetworks,
-    } = await  applepay.config();
+  const {
+    isEligible,
+    countryCode,
+    currencyCode,
+    merchantCapabilities,
+    supportedNetworks,
+  } = await applepay.config();
 
   if (!isEligible) {
     throw new Error("applepay is not eligible");
@@ -79,10 +81,9 @@ async function setupApplepay() {
   document.getElementById("btn-appl").addEventListener("click", onClick);
 
   async function onClick() {
-
     const paymentRequest = {
       countryCode,
-      currencyCode: 'USD',
+      currencyCode: "USD",
       merchantCapabilities,
       supportedNetworks,
       shippingMethods: [
@@ -128,12 +129,7 @@ async function setupApplepay() {
         },
       ],
       shippingType: "shipping",
-      requiredBillingContactFields: [
-        "name",
-        "phone",
-        "email",
-        "postalAddress",
-      ],
+      requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
       requiredShippingContactFields: [
         "postalAddress",
         "name",
@@ -170,8 +166,7 @@ async function setupApplepay() {
         })
         .then((payload) => {
           session.completeMerchantValidation(payload.merchantSession);
-          console.log("Complete Merchant validation Done !", {payload})
-
+          console.log("Complete Merchant validation Done !", { payload });
         })
         .catch((err) => {
           console.error(err);
@@ -180,84 +175,84 @@ async function setupApplepay() {
     };
 
     session.onpaymentmethodselected = (event) => {
-        session.completePaymentMethodSelection({
-            newTotal: paymentRequest.total,
-            newLineItems: paymentRequest.lineItems
-        });
+      session.completePaymentMethodSelection({
+        newTotal: paymentRequest.total,
+        newLineItems: paymentRequest.lineItems,
+      });
     };
 
     session.onshippingcontactselected = async (event) => {
-
-      console.log("Your shipping contacts selected is:"+ event.shippingContact)
+      console.log(
+        "Your shipping contacts selected is:" + event.shippingContact
+      );
 
       /*
-       * US Shipping only
+       * US Shipping only - example of error handling
        */
-       if (event.shippingContact.countryCode !== "US") {
-         return session.completeShippingContactSelection({
-           errors: [
-             new ApplePayError(
-               "shippingContactInvalid",
-               "postalCode",
-               "Sorry we only ship to the US currently"
-             ),
-           ],
-         });
-       }
-
-      // console.log("onshippingcontactselected");
-      // console.log(JSON.stringify(event.shippingContact, null, 4));
+      if (event.shippingContact.countryCode !== "US") {
+        return session.completeShippingContactSelection({
+          errors: [
+            new ApplePayError(
+              "shippingContactInvalid",
+              "postalCode",
+              "Sorry we only ship to the US currently"
+            ),
+          ],
+        });
+      }
 
       const { postalCode } = event.shippingContact;
 
-      const { newShippingMethods, taxRate } = await calculateShipping(postalCode);
+      const { newShippingMethods, taxRate } = await calculateShipping(
+        postalCode
+      );
 
       const goodsItem = paymentRequest.lineItems.find(
-         (item) => item.label === "Goods"
-        );
+        (item) => item.label === "Goods"
+      );
 
-       const newLineItems = [
-         { ...goodsItem },
-         {
-           label: "Shipping",
-           amount: newShippingMethods[0]?.amount,
-         },
-         {
-           label: "Sales Tax",
-           amount: (taxRate * parseFloat(goodsItem.amount)).toFixed(2),
-         },
-       ];
+      const newLineItems = [
+        { ...goodsItem },
+        {
+          label: "Shipping",
+          amount: newShippingMethods[0]?.amount,
+        },
+        {
+          label: "Sales Tax",
+          amount: (taxRate * parseFloat(goodsItem.amount)).toFixed(2),
+        },
+      ];
 
-       const totalAmount = newLineItems.reduce(
-         (total, item) => total + parseFloat(item.amount),
-         0
-       );
+      const totalAmount = newLineItems.reduce(
+        (total, item) => total + parseFloat(item.amount),
+        0
+      );
 
-       console.log(
-         JSON.stringify(
-           { totalAmount, newLineItems, newShippingMethods },
-           null,
-           4
-         )
-       );
+      console.log(
+        JSON.stringify(
+          { totalAmount, newLineItems, newShippingMethods },
+          null,
+          4
+        )
+      );
 
-       const newTotal = {
-         label: "Demo (Card is not charged)",
-         amount: totalAmount.toFixed(2),
-         type: "final",
-       };
+      const newTotal = {
+        label: "Demo (Card is not charged)",
+        amount: totalAmount.toFixed(2),
+        type: "final",
+      };
 
       const shippingContactUpdate = {
-         newTotal,
-         newLineItems,
-         newShippingMethods,
-         errors: [],
-       };
+        newTotal,
+        newLineItems,
+        newShippingMethods,
+        errors: [],
+      };
 
-       Object.assign(paymentRequest, {
-         lineItems: newLineItems,
-         total: newTotal,
-         });
+      Object.assign(paymentRequest, {
+        lineItems: newLineItems,
+        total: newTotal,
+      });
 
       session.completeShippingContactSelection(shippingContactUpdate);
     };
@@ -267,40 +262,39 @@ async function setupApplepay() {
       console.log(JSON.stringify(event.shippingMethod, null, 4));
       console.log("Your shipping method selected is:", event.shippingMethod);
 
-    
       const newLineItems = [
-         {
-           ...paymentRequest.lineItems.find((item) => item.label == "Goods"),
-         },
-         {
-           ...paymentRequest.lineItems.find((item) => item.label == "Sales Tax"),
-         },
-         {
-           label: "Shipping",
-           amount: event.shippingMethod.amount,
-         },
+        {
+          ...paymentRequest.lineItems.find((item) => item.label == "Goods"),
+        },
+        {
+          ...paymentRequest.lineItems.find((item) => item.label == "Sales Tax"),
+        },
+        {
+          label: "Shipping",
+          amount: event.shippingMethod.amount,
+        },
       ];
 
       let totalAmount = newLineItems.reduce(
-         (total, item) => total + parseFloat(item.amount),
-         0
+        (total, item) => total + parseFloat(item.amount),
+        0
       );
 
       const newTotal = {
-         label: "Demo (Card is not charged)",
-         amount: totalAmount.toFixed(2),
-         type: "final",
+        label: "Demo (Card is not charged)",
+        amount: totalAmount.toFixed(2),
+        type: "final",
       };
 
       const shippingMethodUpdate = {
-         newTotal,
-         newLineItems,
-         errors: [],
+        newTotal,
+        newLineItems,
+        errors: [],
       };
 
-       Object.assign(paymentRequest, {
-         lineItems: newLineItems,
-         total: newTotal,
+      Object.assign(paymentRequest, {
+        lineItems: newLineItems,
+        total: newTotal,
       });
 
       session.completeShippingMethodSelection(shippingMethodUpdate);
@@ -308,7 +302,6 @@ async function setupApplepay() {
 
     session.onpaymentauthorized = async (event) => {
       try {
-
         const order = {
           intent: "CAPTURE",
           purchase_units: [
@@ -317,47 +310,56 @@ async function setupApplepay() {
                 currency_code: "USD",
                 value: paymentRequest.total.amount,
                 breakdown: {
-                    item_total: {
-                      currency_code: "USD",
-                      value: paymentRequest.lineItems[0].amount,
-                    },
-                    tax_total: {
-                      currency_code: "USD",
-                      value: paymentRequest.lineItems[1].amount,
-                    },
-                    shipping: {
-                      currency_code: "USD",
-                      value: paymentRequest.lineItems[2].amount,
-                    },
+                  item_total: {
+                    currency_code: "USD",
+                    value: paymentRequest.lineItems[0].amount,
                   },
+                  tax_total: {
+                    currency_code: "USD",
+                    value: paymentRequest.lineItems[1].amount,
+                  },
+                  shipping: {
+                    currency_code: "USD",
+                    value: paymentRequest.lineItems[2].amount,
+                  },
+                },
               },
               payee: {
                 merchant_id: "2V9L63AM2BYKC",
               },
             },
           ],
-        }
+        };
 
         /* Create Order on the Server Side */
-        
-        const { id } = await fetch(`/orders`,{
-          method:'POST',
-          headers : {
-            'Content-Type': 'application/json'
+        const orderResonse = await fetch(`/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(order)
-        }).then((res) => res.json());
+          body: JSON.stringify(order),
+        });
+        if (!orderResonse.ok) {
+          throw new Error("error creating order");
+        }
+
+        const { id } = await orderResonse.json();
 
         /**
-         * Confirm Payment 
+         * Confirm Payment
          */
-        await applepay.confirmOrder({ orderID: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+        await applepay.confirmOrder({
+          orderId: id,
+          token: event.payment.token,
+          billingContact: event.payment.billingContact,
+          shippingContact: event.payment.shippingContact,
+        });
 
         /*
-        * Capture order (must currently be made on server)
-        */
+         * Capture order (must currently be made on server)
+         */
         await fetch(`/capture/${id}`, {
-          method: 'POST',
+          method: "POST",
         });
 
         session.completePayment({
@@ -371,10 +373,10 @@ async function setupApplepay() {
       }
     };
 
-    session.oncancel  = (event) => {
+    session.oncancel = (event) => {
       console.log(event);
-      console.log("Apple Pay Cancelled !!")
-    }
+      console.log("Apple Pay Cancelled !!");
+    };
 
     session.begin();
   }
@@ -383,7 +385,11 @@ async function setupApplepay() {
 document.addEventListener("DOMContentLoaded", (event) => {
   console.log("DOMContentLoaded");
 
-  if(ApplePaySession?.supportsVersion(4) && ApplePaySession?.canMakePayments()) {
+  if (
+    ApplePaySession?.supportsVersion(4) &&
+    ApplePaySession?.canMakePayments()
+  ) {
     setupApplepay().catch(console.log);
   }
 });
+
