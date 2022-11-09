@@ -99,7 +99,7 @@ async function setupApplepay() {
         }
 
         const { id } = await orderResonse.json()
-
+        console.log({ id })
         /**
          * Confirm Payment 
          */
