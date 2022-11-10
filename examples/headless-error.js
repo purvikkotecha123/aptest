@@ -15,9 +15,9 @@ async function setupApplepay() {
       supportedNetworks,
     } = await  applepay.config();
 
-  if (!isEligible) {
-    throw new Error("applepay is not eligible");
-  }
+  // if (!isEligible) {
+  //   throw new Error("applepay is not eligible");
+  // }
 
   document.getElementById("applepay-container").innerHTML =
     '<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">';
