@@ -1,7 +1,6 @@
 /* eslint-disable  no-alert, no-unused-vars, no-undef */
 
 
-
 /*
  * Merchant integration
  */
@@ -349,7 +348,7 @@ async function setupApplepay() {
         /**
          * Confirm Payment 
          */
-        await applepay.confirmOrder({ orderID: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+        await applepay.confirmOrder({ orderId: id, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
 
         /*
         * Capture order (must currently be made on server)
