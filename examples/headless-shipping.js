@@ -133,7 +133,6 @@ async function setupApplepay() {
       requiredShippingContactFields: [
         "postalAddress",
         "name",
-        "phone",
         "email",
       ],
       lineItems: [
@@ -325,7 +324,7 @@ async function setupApplepay() {
                 },
               },
               payee: {
-                merchant_id: "2V9L63AM2BYKC",
+                merchant_id: "LM7TUQJVSUPRQ",
               },
             },
           ],
