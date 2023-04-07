@@ -132,7 +132,6 @@ async function setupApplepay() {
       requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
       requiredShippingContactFields: [
         "postalAddress",
-        "phone",
         "name",
         "email",
       ],
