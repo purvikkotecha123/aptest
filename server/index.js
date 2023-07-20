@@ -67,7 +67,7 @@ app.post("/capture/:orderId", async (req, res) => {
   const { access_token } = await getAccessToken();
 
   const { data, headers } = await axios({
-    url: `${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}/capture`,
+    url: `https://api.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
@@ -154,7 +154,7 @@ app.post("/orders", async (req, res) => {
     const { access_token } = await getAccessToken();
 
     const { data } = await axios({
-      url: `${PAYPAL_API_BASE}/v2/checkout/orders`,
+      url: `https://api.sandbox.paypal.com/v2/checkout/orders`,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
