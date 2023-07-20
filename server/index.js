@@ -64,7 +64,7 @@ app.post("/capture/:orderId", async (req, res) => {
 
   const { orderId } = req.params;
 
-  const { access_token } = await getAccessToken();
+//  const { access_token } = await getAccessToken();
 
   const { data, headers } = await axios({
     url: `https://api.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`,
@@ -151,7 +151,7 @@ app.post("/orders", async (req, res) => {
   };
 
   try {
-    const { access_token } = await getAccessToken();
+//    const { access_token } = await getAccessToken();
 
     const { data } = await axios({
       url: `https://api.sandbox.paypal.com/v2/checkout/orders`,
