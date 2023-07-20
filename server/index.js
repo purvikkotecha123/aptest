@@ -73,7 +73,7 @@ app.post("/capture/:orderId", async (req, res) => {
       "Content-Type": "application/json",
       Accept: "application/json",
       Prefer: 'return=representation',
-      Authorization: `Bearer ${access_token}`,
+      Authorization: `Basic QWFZQVpxYmhSOHZOZUpRQmNWNk13TkVxTHNTMHNrNVI2c1E5dTN2WFVoMVlKRGI3VUFNRThSaE5MLTNtai1GLU56RUJqN1JWeHd1RmJjcDU6RUFBdFd3SUVyeGRtZEEwOW5YS0wtS3JweFBGWHJwZjdyV1NvVWxWS2dlaDk0WWRuV0NJV19RdmZQS1lvS0JUcEstZnBQRnNNZld5cFY2WDY=`,
     },
   });
 
@@ -159,7 +159,7 @@ app.post("/orders", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Basic QWFZQVpxYmhSOHZOZUpRQmNWNk13TkVxTHNTMHNrNVI2c1E5dTN2WFVoMVlKRGI3VUFNRThSaE5MLTNtai1GLU56RUJqN1JWeHd1RmJjcDU6RUFBdFd3SUVyeGRtZEEwOW5YS0wtS3JweFBGWHJwZjdyV1NvVWxWS2dlaDk0WWRuV0NJV19RdmZQS1lvS0JUcEstZnBQRnNNZld5cFY2WDY=`,
       },
       data: {...order}
     });
