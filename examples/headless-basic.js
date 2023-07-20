@@ -80,7 +80,7 @@ async function setupApplepay() {
                 value: paymentRequest.total.amount,
               },
               payee: {
-                merchant_id: "WRRC5LWUFVVRC",
+                merchant_id: "4JLZ2LPZ3PJJU",
               },
             },
           ],
