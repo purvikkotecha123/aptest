@@ -41,25 +41,25 @@ async function setupApplepay() {
       requiredShippingContactFields: [
       ],
       total: {
-        label: "Demo (Card is not charged)",
-        amount: "100",
+        label: "Demo update",
+        amount: "90",
         type: "final",
       },
       lineItems: [
     {
-        "label": "Bag Subtotal",
-        "type": "final",
-        "amount": "90.00"
+        label: "Bag Subtotal",
+        type: "final",
+        amount: "80.00"
     },
     {
-        "label": "Fedex Shipping",
-        "amount": "5.00",
-        "type": "final"
+        label: "Fedex Shipping",
+        amount: "5.00",
+        type: "final"
     },
     {
-        "label": "Estimated Tax",
-        "amount": "5.00",
-        "type": "final"
+        label: "Estimated Tax",
+        amount: "5.00",
+        type: "final"
     }
 ]
     };
