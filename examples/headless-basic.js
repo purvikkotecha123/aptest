@@ -110,7 +110,7 @@ async function setupApplepay() {
         "type": "final"
     }
 };
-    var session = new ApplePaySession(4, paymentRequest);
+    var session = new ApplePaySession(3, paymentRequest);
 
     session.onvalidatemerchant = (event) => {
       applepay
