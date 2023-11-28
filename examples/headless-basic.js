@@ -30,21 +30,71 @@ async function setupApplepay() {
     const paymentRequest = {
     "countryCode": "US",
     "currencyCode": "USD",
-    merchantCapabilities,
-    supportedNetworks,
+    "merchantCapabilities": [
+        "supports3DS",
+        "supportsDebit",
+        "supportsCredit"
+    ],
+    "shippingMethods": [
+        {
+            "label": "Free Standard Shipping",
+            "amount": "0.00",
+            "detail": "Arrives in 5-7 days",
+            "identifier": "standardShipping",
+            "dateComponentsRange": {
+                "startDateComponents": {
+                    "years": 2023,
+                    "months": 12,
+                    "days": 3,
+                    "hours": 0
+                },
+                "endDateComponents": {
+                    "years": 2023,
+                    "months": 12,
+                    "days": 5,
+                    "hours": 0
+                }
+            }
+        },
+        {
+            "label": "Express Shipping",
+            "amount": "1.00",
+            "detail": "Arrives in 2-3 days",
+            "identifier": "expressShipping",
+            "dateComponentsRange": {
+                "startDateComponents": {
+                    "years": 2023,
+                    "months": 11,
+                    "days": 30,
+                    "hours": 0
+                },
+                "endDateComponents": {
+                    "years": 2023,
+                    "months": 12,
+                    "days": 1,
+                    "hours": 0
+                }
+            }
+        }
+    ],
+    "shippingType": "shipping",
+    "supportedNetworks": [
+        "visa",
+        "masterCard",
+        "amex",
+        "discover"
+    ],
     "requiredBillingContactFields": [
-        "name",
-        "phone",
-        "email",
-        "postalAddress"
+        "postalAddress",
+        "name"
     ],
     "requiredShippingContactFields": [
+        "postalAddress",
+        "name",
+        "phone",
+        "email"
     ],
     "lineItems": [
-       {
-            "label": "Goods",
-            "amount": "1.99"
-        },
         {
             "label": "Sales Tax",
             "amount": "1.00"
