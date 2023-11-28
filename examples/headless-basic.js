@@ -40,11 +40,6 @@ async function setupApplepay() {
       ],
       requiredShippingContactFields: [
       ],
-      total: {
-        label: "Demo update 123",
-        amount: "91",
-        type: "final",
-      },
       lineItems: [
     {
         label: "Bag Subtotal",
@@ -59,6 +54,11 @@ async function setupApplepay() {
         amount: "5.00"
     }
 ],
+      total: {
+        label: "Demo update 123",
+        amount: "91",
+        type: "final",
+      },
     };
 
     var session = new ApplePaySession(4, paymentRequest);
