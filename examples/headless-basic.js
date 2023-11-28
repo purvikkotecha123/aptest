@@ -28,39 +28,38 @@ async function setupApplepay() {
     console.log({ merchantCapabilities, currencyCode, supportedNetworks })
 
     const paymentRequest = {
-      countryCode,
-      currencyCode: 'USD',
-      merchantCapabilities,
-      supportedNetworks,
-      requiredBillingContactFields: [
+    "countryCode": "US",
+    "currencyCode": "USD",
+    merchantCapabilities,
+    supportedNetworks,
+    "requiredBillingContactFields": [
         "name",
         "phone",
         "email",
-        "postalAddress",
-      ],
-      requiredShippingContactFields: [
-      ],
-      lineItems: [
-    {
-        label: "Bag Subtotal",
-        amount: "81.00"
-    },
-    {
-        label: "Fedex Shipping",
-        amount: "5.00"
-    },
-    {
-        label: "Estimated Tax",
-        amount: "5.00"
+        "postalAddress"
+    ],
+    "requiredShippingContactFields": [
+    ],
+    "lineItems": [
+       {
+            "label": "Goods",
+            "amount": "1.99"
+        },
+        {
+            "label": "Sales Tax",
+            "amount": "1.00"
+        },
+        {
+            "label": "Shipping",
+            "amount": "0.00"
+        }
+    ],
+    "total": {
+        "label": "Demo (Card is not charged)",
+        "amount": "2.99",
+        "type": "final"
     }
-],
-      total: {
-        label: "Demo update 123",
-        amount: "91",
-        type: "final",
-      },
-    };
-
+};
     var session = new ApplePaySession(4, paymentRequest);
 
     session.onvalidatemerchant = (event) => {
