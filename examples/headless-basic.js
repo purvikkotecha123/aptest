@@ -127,9 +127,8 @@ async function setupApplepay() {
     };
 
     session.onpaymentmethodselected = (event) => {
-      session.completePaymentMethodSelection({
-        newTotal: paymentRequest.total,
-      });
+       const update = {};
+        session.completePaymentMethodSelection(update);
     };
 
     session.onpaymentauthorized = async (event) => {
