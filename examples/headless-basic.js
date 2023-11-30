@@ -97,20 +97,20 @@ async function setupApplepay() {
     "lineItems": [
         {
             "label": "Sales Tax",
-            "amount": "1.00"
+            "amount": 1.00
         },
         {
             "label": "Shipping",
-            "amount": "0.00"
+            "amount": 0.00
         }
     ],
     "total": {
         "label": "Demo (Card is not charged)",
-        "amount": "2.99",
+        "amount": 2.99,
         "type": "final"
     }
 };
-    var session = new ApplePaySession(3, paymentRequest);
+    var session = new ApplePaySession(4, paymentRequest);
 
     session.onvalidatemerchant = (event) => {
       applepay
